@@ -1,0 +1,176 @@
+/* Colores del proyecto (vienen del diseño de Figma) */
+:root {
+  --color-white: #FFFFFF;
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-placeholder: #9CA3AF;
+  --color-title: #111827;
+  --color-label: #374151;
+  --color-text-muted: #6B7280;
+  --color-border: #D1D5DB;
+  --color-soft: #F3F4F6;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: var(--color-white);
+  color: var(--color-title);
+}
+
+/* ---------- Barra de menú ---------- */
+.app-header {
+  height: 80px;
+  padding: 16px 24px;
+  border-color: var(--color-border) !important;
+}
+
+.logo-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background-color: var(--color-soft);
+}
+
+.brand-name {
+  font-size: 18px;
+  color: var(--color-title);
+}
+
+.header-link {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.header-link:hover {
+  color: var(--color-title);
+}
+
+/* ---------- Tarjeta de inicio de sesión ---------- */
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 48px;
+  gap: 32px;
+  border-radius: 24px;
+  box-shadow: 0 12px 16px rgba(0, 0, 0, 0.08);
+}
+
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: var(--color-soft);
+}
+
+.login-title {
+  font-size: 28px;
+  color: var(--color-title);
+}
+
+.login-subtitle {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Separaciones del formulario */
+.gap-login {
+  gap: 32px;
+}
+
+.gap-field {
+  gap: 20px;
+}
+
+/* ---------- Campos ---------- */
+.app-label {
+  font-size: 14px;
+  color: var(--color-label);
+}
+
+.app-input {
+  height: 52px;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-title);
+}
+
+.app-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+.app-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Botón del ojo dentro del campo de contraseña */
+.btn-eye {
+  right: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
+}
+
+/* ---------- Enlaces y botón ---------- */
+.app-link {
+  font-size: 14px;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.app-link:hover {
+  text-decoration: underline;
+}
+
+.btn-app-primary {
+  height: 52px;
+  font-size: 16px;
+  border-radius: 12px;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  border: 0;
+}
+
+.btn-app-primary:hover,
+.btn-app-primary:focus {
+  color: var(--color-white);
+  background-color: var(--color-primary-hover);
+}
+
+.register-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Marca de agua provisional ---------- */
+.watermark {
+  position: fixed;
+  right: 48px;
+  bottom: 48px;
+  width: 220px;
+  height: 56px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  opacity: 0.5;
+}
+
+.watermark-title {
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.watermark-subtitle {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* En pantallas de celular, menos espacio interno en la tarjeta */
+@media (max-width: 575.98px) {
+  .login-card {
+    padding: 32px 24px;
+  }
+}
