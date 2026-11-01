@@ -48,8 +48,8 @@
         </div>
       </div>
 
-      <!-- Formulario (todavía no se envía a ningún lado) -->
-      <form id="loginForm" method="post" action="" class="d-flex flex-column gap-login">
+      <!-- Formulario: por ahora solo lleva al panel, sin revisar usuario ni contraseña -->
+      <form id="loginForm" method="post" action="panelAdministrador.php" class="d-flex flex-column gap-login">
         <div class="d-flex flex-column gap-field">
           <div>
             <label for="email" class="form-label app-label fw-medium mb-2">Correo electrónico</label>
@@ -84,11 +84,7 @@
     </div>
   </main>
 
-  <!-- Marca de agua provisional del diseño (se puede quitar después) -->
-  <div class="watermark d-none d-md-flex flex-column align-items-center justify-content-center bg-white">
-    <span class="watermark-title fw-semibold">Equipo de trabajo</span>
-    <span class="watermark-subtitle">Provisional / editable</span>
-  </div>
+<?php require __DIR__ . '/includes/watermark.php'; ?>
 
   <script src="public/js/login.js"></script>
 </body>
