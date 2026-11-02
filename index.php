@@ -49,7 +49,7 @@
       </div>
 
       <!-- Formulario: por ahora solo lleva al panel, sin revisar usuario ni contraseña -->
-      <form id="loginForm" method="post" action="panelAdministrador.php" class="d-flex flex-column gap-login">
+      <form id="loginForm" method="post" action="administrador/panelAdministrador.php" class="d-flex flex-column gap-login">
         <div class="d-flex flex-column gap-field">
           <div>
             <label for="email" class="form-label app-label fw-medium mb-2">Correo electrónico</label>

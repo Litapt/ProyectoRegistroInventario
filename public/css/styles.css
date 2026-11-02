@@ -513,6 +513,409 @@ a.breadcrumb-link:hover {
   color: var(--color-primary);
 }
 
+/* ---------- Ventana de éxito al registrar ---------- */
+.success-modal {
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.18);
+}
+
+.success-header {
+  padding: 24px 24px 8px;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--color-primary);
+}
+
+.success-title {
+  font-size: 20px;
+  color: var(--color-title);
+  margin-bottom: 4px !important;
+}
+
+.success-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.success-body {
+  padding: 16px 24px;
+}
+
+/* Cada grupo de datos (pieza, precios, ubicación) */
+.summary-block {
+  padding: 16px 20px;
+  border: 1px solid var(--color-section-border);
+  border-radius: 12px;
+  background-color: var(--color-section-bg);
+}
+
+.summary-heading {
+  font-size: 14px;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px 20px;
+}
+
+.summary-grid dt {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.summary-grid dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--color-title);
+  overflow-wrap: anywhere; /* textos largos bajan de línea en vez de salirse */
+}
+
+/* La descripción ocupa todo el ancho */
+.summary-wide {
+  grid-column: 1 / -1;
+}
+
+.success-footer {
+  padding: 8px 24px 24px;
+}
+
+/* ---------- Registro de entrada – Paso uno (registroEntrada.php) ---------- */
+/* Campos de búsqueda un poco más bajos que los del registro */
+.search-input {
+  height: 48px;
+}
+
+/* Barra gris con la ayuda y los botones del buscador */
+.search-actions {
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-section-border);
+  background-color: var(--color-section-bg);
+}
+
+.search-hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.btn-search-action {
+  height: 48px;
+  padding: 0 24px;
+  font-size: 14px;
+}
+
+/* Tarjeta de resultados */
+.results-card {
+  border: 1px solid var(--color-section-border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.results-summary {
+  padding: 24px;
+}
+
+.results-count,
+.criteria-chip {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--color-primary);
+  background-color: var(--color-icon-bg);
+}
+
+/* Tabla de piezas encontradas */
+.results-table {
+  min-width: 1600px;  /* en pantallas chicas se desliza de lado */
+  border-color: var(--color-section-border);
+}
+
+.results-table th {
+  height: 54px;
+  padding: 0 16px 0 0;
+  vertical-align: middle;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-label);
+  background-color: var(--color-section-bg);
+  border-top: 1px solid var(--color-section-border);
+}
+
+.results-table td {
+  height: 72px;
+  padding: 0 16px 0 0;
+  vertical-align: middle;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-title);
+}
+
+/* Margen de 24px a la izquierda y derecha de la tabla, como en el diseño */
+.results-table th:first-child,
+.results-table td:first-child {
+  padding-left: 24px;
+}
+
+.results-table th:last-child,
+.results-table td:last-child {
+  padding-right: 24px;
+}
+
+/* Filas alternadas: blanca y gris */
+.results-table tbody tr:nth-child(even) td {
+  background-color: var(--color-section-bg);
+}
+
+.cell-description {
+  width: 345px;
+  font-size: 13px !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* La fila se marca al pasar el mouse o al llegar con el teclado */
+.result-row {
+  cursor: pointer;
+}
+
+.result-row:hover td,
+.result-row:focus td {
+  background-color: var(--color-icon-bg) !important;
+}
+
+.result-row:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.results-empty {
+  padding: 32px 24px !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* Pie de la tabla con la paginación */
+.results-footer {
+  min-height: 68px;
+  padding: 12px 24px;
+}
+
+.page-step {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+a.page-step:hover {
+  color: var(--color-primary);
+}
+
+.page-step.is-disabled {
+  opacity: 0.45;
+}
+
+.page-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.page-number.is-current {
+  color: var(--color-primary);
+  background-color: var(--color-icon-bg);
+}
+
+a.page-number:hover {
+  background-color: var(--color-soft);
+}
+
+/* ---------- Detalle de la pieza (detallePieza.php) ---------- */
+.detail-main {
+  padding-bottom: 64px;
+}
+
+.detail-card {
+  border: 1px solid var(--color-section-border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Las 3 tarjetas de abajo miden lo mismo de alto, mínimo 300px */
+.detail-card-tall {
+  min-height: 300px;
+}
+
+.detail-card-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--color-section-border);
+}
+
+.detail-card-body {
+  padding: 24px;
+}
+
+/* Línea arriba de la descripción */
+.detail-description {
+  padding-top: 20px;
+  border-top: 1px solid var(--color-section-border);
+}
+
+/* Texto gris que dice qué dato es ("Marca", "Stock"...) */
+.detail-label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* Valores, del más chico al más grande */
+.detail-value {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-title);
+  overflow-wrap: anywhere;
+}
+
+.detail-value-mid {
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--color-title);
+}
+
+.detail-value-name {
+  font-size: 22px;
+  line-height: 1.5;
+  color: var(--color-title);
+}
+
+.detail-value-big {
+  font-size: 28px;
+  line-height: 1.4;
+  color: var(--color-title);
+}
+
+/* ---------- Entrada de stock (entradaStock.php) ---------- */
+.entry-label {
+  color: var(--color-title);
+}
+
+.entry-affix {
+  height: 48px;
+}
+
+/* Rojo de Bootstrap para los errores (no hay rojo en la paleta del proyecto) */
+.input-affix.is-invalid {
+  border-color: var(--bs-danger);
+}
+
+.entry-help {
+  margin-top: 8px !important;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.entry-help.is-error {
+  color: var(--bs-danger);
+}
+
+/* Botones Aceptar / Cancelar del mismo ancho mínimo */
+.btn-entry {
+  min-width: 136px;
+}
+
+/* Tabla de datos generales (dos datos por fila) */
+.general-header {
+  border-bottom: 0;
+}
+
+.general-table {
+  min-width: 720px;  /* en pantallas chicas se desliza de lado */
+}
+
+.general-table thead th {
+  height: 44px;
+  padding: 0 24px;
+  vertical-align: middle;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background-color: var(--color-section-bg);
+  border-top: 1px solid var(--color-section-border);
+  border-bottom: 1px solid var(--color-section-border);
+}
+
+.general-table tbody th,
+.general-table tbody td {
+  min-height: 58px;
+  padding: 16px 24px;
+  vertical-align: middle;
+  border-color: var(--color-section-border);
+}
+
+/* Nombre del dato (columna "Campo") */
+.general-table tbody th {
+  width: 224px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Valor del dato (columna "Información") */
+.general-table tbody td {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-title);
+}
+
+.general-table tbody tr:last-child th,
+.general-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Campo de motivo de la salida (salidaStock.php) */
+.reason-textarea {
+  height: 112px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.reason-textarea.is-invalid {
+  border-color: var(--bs-danger);
+}
+
+/* Ventana de éxito de la entrada (y de la salida) */
+.entry-success-dialog {
+  max-width: 460px;
+}
+
+.entry-success {
+  padding: 32px;
+  gap: 24px;
+}
+
+.entry-success-title {
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: -0.4px;
+  color: var(--color-title);
+}
+
+.entry-success-text {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--color-text-muted);
+}
+
 /* En pantallas grandes la columna derecha mide 400px, como en el diseño */
 @media (min-width: 1200px) {
   .register-aside {

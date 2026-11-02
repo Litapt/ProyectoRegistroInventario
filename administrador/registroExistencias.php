@@ -1,6 +1,6 @@
 <?php
 // Pantalla para registrar una pieza nueva en el inventario.
-// Se llega aquí con el botón "Existencias" del panel del administrador.
+// Se llega aquí con el botón "Registrar nuevos productos" de panelExistencias.php.
 // IMPORTANTE: por ahora el formulario NO guarda nada; falta la tabla de productos en MySQL.
 
 // Lugares de almacenamiento que aparecen en la lista "Ubicación".
@@ -30,7 +30,7 @@ $tips = [
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Nuestros estilos propios -->
-  <link href="public/css/styles.css" rel="stylesheet">
+  <link href="../public/css/styles.css" rel="stylesheet">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -38,14 +38,14 @@ $tips = [
   <header class="app-header d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom bg-white">
     <a href="panelAdministrador.php" class="d-flex align-items-center gap-3 text-decoration-none">
       <span class="logo-box d-flex align-items-center justify-content-center">
-        <img src="public/img/logo.svg" width="20" height="20" alt="">
+        <img src="../public/img/logo.svg" width="20" height="20" alt="">
       </span>
       <span class="brand-name fw-bold">Luna headlights</span>
     </a>
     <nav class="d-flex flex-wrap align-items-center gap-4">
       <a href="#" class="header-link fw-medium text-decoration-none">Ayuda</a>
       <a href="#" class="header-link fw-medium text-decoration-none">Configuración de la aplicación</a>
-      <a href="index.php" class="header-link fw-medium text-decoration-none">Cerrar sesión</a>
+      <a href="../index.php" class="header-link fw-medium text-decoration-none">Cerrar sesión</a>
     </nav>
   </header>
 
@@ -54,9 +54,9 @@ $tips = [
     <!-- Ruta de navegación (dónde estás) -->
     <nav aria-label="Ruta de navegación" class="breadcrumb-nav d-flex flex-wrap align-items-center">
       <a href="panelAdministrador.php" class="breadcrumb-link">Inicio</a>
-      <img src="public/img/icon-chevron-right.svg" width="14" height="14" alt="">
-      <span class="breadcrumb-link">Existencias</span>
-      <img src="public/img/icon-chevron-right.svg" width="14" height="14" alt="">
+      <img src="../public/img/icon-chevron-right.svg" width="14" height="14" alt="">
+      <a href="panelExistencias.php" class="breadcrumb-link">Existencias</a>
+      <img src="../public/img/icon-chevron-right.svg" width="14" height="14" alt="">
       <span class="breadcrumb-current fw-semibold" aria-current="page">Nuevo registro</span>
     </nav>
 
@@ -66,8 +66,8 @@ $tips = [
         <h1 class="page-title fw-bold m-0">Registrar existencias</h1>
         <p class="page-subtitle m-0">Agrega una pieza al inventario y define sus precios, cantidades y ubicación.</p>
       </div>
-      <a href="panelAdministrador.php" class="app-link fw-semibold d-flex align-items-center gap-2">
-        <img src="public/img/icon-arrow-left.svg" width="18" height="18" alt="">
+      <a href="panelExistencias.php" class="app-link fw-semibold d-flex align-items-center gap-2">
+        <img src="../public/img/icon-arrow-left.svg" width="18" height="18" alt="">
         Volver a existencias
       </a>
     </div>
@@ -82,7 +82,7 @@ $tips = [
         <section class="form-section d-flex flex-column">
           <div class="d-flex align-items-center gap-3">
             <span class="section-symbol d-flex align-items-center justify-content-center flex-shrink-0">
-              <img src="public/img/icon-package-small.svg" width="20" height="20" alt="">
+              <img src="../public/img/icon-package-small.svg" width="20" height="20" alt="">
             </span>
             <div>
               <h2 class="form-section-title fw-bold m-0">Datos de la pieza</h2>
@@ -115,7 +115,7 @@ $tips = [
         <section class="form-section form-section-muted d-flex flex-column">
           <div class="d-flex align-items-center gap-3">
             <span class="section-symbol d-flex align-items-center justify-content-center flex-shrink-0">
-              <img src="public/img/icon-sliders.svg" width="20" height="20" alt="">
+              <img src="../public/img/icon-sliders.svg" width="20" height="20" alt="">
             </span>
             <div>
               <h2 class="form-section-title fw-bold m-0">Precios y existencias</h2>
@@ -159,7 +159,7 @@ $tips = [
         <section class="form-section d-flex flex-column">
           <div class="d-flex align-items-center gap-3">
             <span class="section-symbol d-flex align-items-center justify-content-center flex-shrink-0">
-              <img src="public/img/icon-map-pin.svg" width="20" height="20" alt="">
+              <img src="../public/img/icon-map-pin.svg" width="20" height="20" alt="">
             </span>
             <div>
               <h2 class="form-section-title fw-bold m-0">Ubicación</h2>
@@ -191,9 +191,9 @@ $tips = [
         <div class="form-actions d-flex flex-wrap align-items-center justify-content-between gap-3">
           <button type="reset" class="btn-clear fw-medium">Limpiar formulario</button>
           <div class="d-flex flex-wrap gap-3">
-            <a href="panelAdministrador.php" class="btn btn-app-secondary fw-semibold d-flex align-items-center">Cancelar</a>
+            <a href="panelExistencias.php" class="btn btn-app-secondary fw-semibold d-flex align-items-center">Cancelar</a>
             <button type="submit" class="btn btn-app-primary btn-save fw-semibold d-flex align-items-center gap-2">
-              <img src="public/img/icon-save.svg" width="20" height="20" alt="">
+              <img src="../public/img/icon-save.svg" width="20" height="20" alt="">
               Registrar existencia
             </button>
           </div>
@@ -207,7 +207,7 @@ $tips = [
         <div class="aside-card aside-card-muted d-flex flex-column gap-4">
           <div class="d-flex align-items-center justify-content-between">
             <span class="status-icon d-flex align-items-center justify-content-center">
-              <img src="public/img/icon-package-plus.svg" width="24" height="24" alt="">
+              <img src="../public/img/icon-package-plus.svg" width="24" height="24" alt="">
             </span>
             <span class="status-badge fw-semibold">Sin guardar</span>
           </div>
@@ -224,7 +224,7 @@ $tips = [
           <h2 class="tips-title fw-bold m-0">Antes de registrar</h2>
 <?php foreach ($tips as $tip): ?>
           <div class="d-flex align-items-start gap-3">
-            <img src="public/img/<?= htmlspecialchars($tip['icon']) ?>" width="20" height="20" alt="" class="flex-shrink-0">
+            <img src="../public/img/<?= htmlspecialchars($tip['icon']) ?>" width="20" height="20" alt="" class="flex-shrink-0">
             <div class="d-flex flex-column gap-1">
               <p class="tip-title fw-semibold m-0"><?= htmlspecialchars($tip['title']) ?></p>
               <p class="tip-text m-0"><?= htmlspecialchars($tip['text']) ?></p>
@@ -235,7 +235,7 @@ $tips = [
 
         <!-- Aviso sobre el stock mínimo -->
         <div class="min-stock-note d-flex align-items-start gap-3">
-          <img src="public/img/icon-bell.svg" width="20" height="20" alt="" class="flex-shrink-0">
+          <img src="../public/img/icon-bell.svg" width="20" height="20" alt="" class="flex-shrink-0">
           <div class="d-flex flex-column gap-1">
             <p class="note-title fw-semibold m-0">Anticípate al stock bajo</p>
             <p class="note-text m-0">El stock mínimo define cuándo necesitas reabastecer esta pieza.</p>
@@ -246,7 +246,71 @@ $tips = [
     </div>
   </main>
 
-<?php require __DIR__ . '/includes/watermark.php'; ?>
+  <!-- Ventana de éxito: aparece encima del formulario al registrar la pieza.
+       Los datos los llena public/js/registroExistencias.js -->
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content success-modal">
+
+        <div class="modal-header success-header border-0 align-items-start gap-3">
+          <span class="success-icon d-flex align-items-center justify-content-center flex-shrink-0">
+            <img src="../public/img/icon-check-circle.svg" width="28" height="28" alt="">
+          </span>
+          <div class="flex-grow-1">
+            <h2 id="successModalTitle" class="success-title fw-bold m-0">Pieza registrada con éxito</h2>
+            <p class="success-text m-0">Estos son los datos que se agregaron al inventario.</p>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body success-body d-flex flex-column gap-3">
+          <!-- Datos de la pieza -->
+          <div class="summary-block">
+            <h3 class="summary-heading fw-semibold">Datos de la pieza</h3>
+            <dl class="summary-grid m-0">
+              <div><dt>Nombre</dt><dd id="summaryPartName"></dd></div>
+              <div><dt>Número de serie</dt><dd id="summarySerial"></dd></div>
+              <div><dt>Marca</dt><dd id="summaryBrand"></dd></div>
+              <div class="summary-wide"><dt>Descripción</dt><dd id="summaryDescription"></dd></div>
+            </dl>
+          </div>
+
+          <!-- Precios y existencias -->
+          <div class="summary-block">
+            <h3 class="summary-heading fw-semibold">Precios y existencias</h3>
+            <dl class="summary-grid m-0">
+              <div><dt>Precio de compra</dt><dd id="summaryPurchasePrice"></dd></div>
+              <div><dt>Precio de venta</dt><dd id="summarySalePrice"></dd></div>
+              <div><dt>Stock</dt><dd id="summaryStock"></dd></div>
+              <div><dt>Stock mínimo</dt><dd id="summaryMinStock"></dd></div>
+            </dl>
+          </div>
+
+          <!-- Ubicación -->
+          <div class="summary-block">
+            <h3 class="summary-heading fw-semibold">Ubicación</h3>
+            <dl class="summary-grid m-0">
+              <div><dt>Ubicación</dt><dd id="summaryLocation"></dd></div>
+              <div><dt>Anaquel</dt><dd id="summaryShelf"></dd></div>
+              <div><dt>Rack</dt><dd id="summaryRack"></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="modal-footer success-footer border-0 gap-2">
+          <a href="panelExistencias.php" class="btn btn-app-secondary fw-semibold d-flex align-items-center m-0">Volver a existencias</a>
+          <button type="button" id="registerAnother" class="btn btn-app-primary btn-save fw-semibold m-0">Registrar otra pieza</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<?php require __DIR__ . '/../includes/watermark.php'; ?>
+
+  <!-- JavaScript de Bootstrap (necesario para la ventana de éxito) y nuestro script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../public/js/registroExistencias.js"></script>
 
 </body>
 </html>
