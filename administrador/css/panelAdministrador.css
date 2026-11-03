@@ -1,0 +1,116 @@
+/* Estilos que solo usan las pantallas del administrador.
+   Los colores, el menú superior y la marca de agua están en public/css/styles.css. */
+
+/* Línea del diseño: queda a media pantalla y detrás del contenido */
+.background-line {
+  position: absolute;
+  top: 540px;
+  left: 50%;
+  width: calc(100% - 107px);
+  height: 1px;
+  transform: translateX(-50%);
+}
+
+/* Contenido: 32px de separación arriba y entre bloques, 48px a los lados */
+.page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px 48px 48px;
+}
+
+/* Barra de notificaciones */
+.notification-bar {
+  min-height: 56px;
+  padding: 6px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.notification-text {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.btn-alerts {
+  --bs-btn-color: var(--color-white);
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-color: var(--color-white);
+  --bs-btn-hover-bg: var(--color-primary);
+  --bs-btn-hover-border-color: var(--color-dark);
+  --bs-btn-active-color: var(--color-white);
+  --bs-btn-active-bg: var(--color-primary);
+  --bs-btn-active-border-color: var(--color-dark);
+  /* 1px menos de relleno porque el borde del botón ocupa ese pixel */
+  --bs-btn-padding-x: 19px;
+  --bs-btn-padding-y: 11px;
+  --bs-btn-line-height: normal;
+  --bs-btn-font-size: 14px;
+  --bs-btn-border-radius: 12px;
+}
+
+/* Panel de acciones y sus secciones */
+.actions-panel {
+  width: 100%;
+  max-width: 1760px;
+}
+
+/* 23px + 1px de borde = los 24px del diseño; así caben 4 botones en una fila */
+.action-section {
+  padding: 23px;
+  background-color: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-primary);
+  border-radius: 12px;
+}
+
+.section-title {
+  color: var(--color-dark);
+  font-size: 20px;
+}
+
+.section-divider {
+  border-top: 1px solid var(--color-border);
+  opacity: 1;
+}
+
+/* Botones grandes de cada acción */
+.action-card {
+  width: 410px;
+  max-width: 100%;
+  height: 120px;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.action-card:hover {
+  border-color: var(--color-primary);
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-soft);
+  border-radius: 12px;
+}
+
+.action-label {
+  color: var(--color-dark);
+  font-size: 20px;
+  line-height: 28px;
+}
+
+/* En pantallas chicas se reducen los márgenes laterales */
+@media (max-width: 575.98px) {
+  .page-content {
+    padding: 24px 16px;
+  }
+}

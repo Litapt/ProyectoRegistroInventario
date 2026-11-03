@@ -1,0 +1,628 @@
+/* Estilos que comparten las dos pantallas de alertas de stock bajo del administrador.
+   Los colores y el menú superior están en public/css/styles.css. */
+
+/* Encabezado de la pantalla */
+.alerts-header {
+  padding: 28px 80px 24px;
+}
+
+.alerts-content {
+  padding: 0 80px 32px;
+}
+
+.breadcrumb-back {
+  color: var(--color-primary);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.breadcrumb-current {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.title-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  border-radius: 12px;
+}
+
+.page-title {
+  color: var(--color-dark);
+  font-size: 28px;
+  line-height: normal;
+}
+
+.page-subtitle {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Botones */
+.btn-soft,
+.btn-solid {
+  --bs-btn-padding-x: 20px;
+  --bs-btn-font-size: 14px;
+  --bs-btn-border-radius: 12px;
+  height: 44px;
+}
+
+.btn-soft {
+  --bs-btn-color: var(--color-dark);
+  --bs-btn-bg: var(--color-white);
+  --bs-btn-border-color: var(--color-border);
+  --bs-btn-hover-color: var(--color-dark);
+  --bs-btn-hover-bg: var(--color-white);
+  --bs-btn-hover-border-color: var(--color-primary);
+  --bs-btn-active-color: var(--color-dark);
+  --bs-btn-active-bg: var(--color-white);
+  --bs-btn-active-border-color: var(--color-primary);
+}
+
+.btn-solid {
+  --bs-btn-color: var(--color-white);
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-color: var(--color-white);
+  --bs-btn-hover-bg: var(--color-primary);
+  --bs-btn-hover-border-color: var(--color-dark);
+  --bs-btn-active-color: var(--color-white);
+  --bs-btn-active-bg: var(--color-primary);
+  --bs-btn-active-border-color: var(--color-dark);
+}
+
+.btn-text {
+  padding: 0;
+  color: var(--color-primary);
+  font-size: 14px;
+  line-height: normal;
+  background: none;
+  border: 0;
+}
+
+/* Tarjetas de resumen: se reparten el ancho y bajan de línea si no caben */
+.summary-card {
+  flex: 1 1 300px;
+  min-width: 0;
+  min-height: 104px;
+  padding: 20px;
+  background-color: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.summary-icon {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-white);
+  border-radius: 12px;
+}
+
+.summary-info {
+  gap: 6px;
+  min-width: 0;
+}
+
+.summary-value {
+  color: var(--color-dark);
+  font-size: 28px;
+  line-height: normal;
+}
+
+.summary-name {
+  color: var(--color-dark);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.summary-text {
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+/* Controles: búsqueda, listas y campos */
+.control-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-dark);
+  font-size: 13px;
+  line-height: normal;
+}
+
+.control-box {
+  height: 44px;
+  padding: 0 14px;
+  gap: 10px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.control-box:focus-within,
+.control-select:focus,
+.control-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+.control-box input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--color-dark);
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+.control-box input::placeholder,
+.control-textarea::placeholder {
+  color: var(--color-placeholder);
+}
+
+/* Lista desplegable con la flecha del diseño */
+.control-select {
+  height: 44px;
+  padding: 0 40px 0 14px;
+  color: var(--color-dark);
+  font-size: 14px;
+  background-image: url("../../imagenes/icon-chevron-down.svg");
+  background-position: right 14px center;
+  background-size: 16px 16px;
+  border-color: var(--color-border);
+  border-radius: 12px;
+}
+
+/* Panel de filtros: cada campo baja de línea si no cabe */
+.filters-panel {
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.filter-search {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.filter-medium {
+  flex: 0 1 270px;
+  min-width: 200px;
+}
+
+.filter-small {
+  flex: 0 1 230px;
+  min-width: 180px;
+}
+
+.filter-clear {
+  width: 128px;
+  height: 44px;
+}
+
+/* Tabla de alertas */
+.table-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.table-tabs {
+  min-height: 60px;
+  padding: 12px 24px;
+}
+
+.alert-tab {
+  height: 36px;
+  padding: 0 14px;
+  color: var(--color-muted);
+  font-size: 14px;
+  font-weight: 500;
+  background-color: var(--color-white);
+  border: 0;
+  border-radius: 12px;
+}
+
+.alert-tab.is-active {
+  color: var(--color-primary);
+  font-weight: 600;
+  background-color: var(--color-soft);
+}
+
+.tab-count {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.table-note {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.alerts-table {
+  width: 100%;
+  min-width: 1400px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.alerts-table th {
+  height: 44px;
+  padding: 0 8px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--color-soft);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.alerts-table td {
+  height: 62px;
+  padding: 0 8px 0 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.alerts-table.is-tall td {
+  height: 66px;
+}
+
+.alerts-table th:first-child,
+.alerts-table td:first-child {
+  padding-left: 24px;
+}
+
+.cell-name {
+  color: var(--color-dark);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.cell-code {
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.cell-incident {
+  color: var(--color-dark);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.cell-stock {
+  color: var(--color-dark);
+  font-weight: 700;
+}
+
+.alerts-table td.cell-dark {
+  color: var(--color-dark);
+}
+
+.cell-date {
+  font-size: 13px;
+  line-height: normal;
+}
+
+.cell-time {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: normal;
+}
+
+.detail-link {
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Etiquetas de prioridad, nivel y estado */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: normal;
+  white-space: nowrap;
+  border-radius: 6px;
+}
+
+.tag-dot {
+  width: 6px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50%;
+}
+
+.tag-high {
+  color: var(--color-white);
+  background-color: var(--color-primary);
+}
+
+.tag-medium {
+  color: var(--color-dark);
+  background-color: var(--color-border);
+}
+
+.tag-low {
+  color: var(--color-muted);
+  background-color: var(--color-soft);
+}
+
+.tag-review {
+  color: var(--color-primary);
+  background-color: var(--color-soft);
+}
+
+/* 5px y 9px de relleno + 1px de borde = la misma medida que las otras etiquetas */
+.tag-done {
+  padding: 5px 9px;
+  color: var(--color-text);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+}
+
+/* Paginación */
+.table-footer {
+  min-height: 62px;
+  padding: 12px 24px;
+}
+
+.pagination-text {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.page-size-select {
+  width: auto;
+  height: 32px;
+  padding: 0 30px 0 10px;
+  color: var(--color-dark);
+  font-size: 13px;
+  background-image: url("../../imagenes/icon-chevron-down-sm.svg");
+  background-position: right 10px center;
+  background-size: 14px 14px;
+  border-color: var(--color-border);
+  border-radius: 8px;
+}
+
+.page-nav {
+  padding: 0;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  border: 0;
+}
+
+.page-nav:disabled {
+  color: var(--color-placeholder);
+}
+
+.page-number {
+  width: 32px;
+  height: 32px;
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 600;
+  background-color: var(--color-white);
+  border: 0;
+  border-radius: 8px;
+}
+
+.page-number.is-active {
+  color: var(--color-white);
+  background-color: var(--color-primary);
+}
+
+.alerts-footnote {
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+/* Formulario para crear una alerta */
+.alert-form {
+  gap: 20px;
+  padding: 24px;
+  background-color: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.form-title {
+  color: var(--color-dark);
+  font-size: 18px;
+  line-height: normal;
+}
+
+.form-subtitle {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.destination-tag {
+  padding: 6px 10px;
+  color: var(--color-primary);
+  font-size: 12px;
+  line-height: normal;
+  background-color: var(--color-white);
+  border-radius: 6px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.col-grow {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.col-320 {
+  flex: 0 1 320px;
+  min-width: 0;
+}
+
+.col-310 {
+  flex: 0 1 310px;
+  min-width: 0;
+}
+
+.col-280 {
+  flex: 0 1 280px;
+  min-width: 0;
+}
+
+.col-260 {
+  flex: 0 1 260px;
+  min-width: 0;
+}
+
+.condition-col {
+  padding-left: 12px;
+}
+
+/* Oculta la flecha que el navegador agrega a la lista de productos */
+.control-box input::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+/* Campos que el usuario no puede editar */
+.control-box.is-readonly {
+  background-color: var(--color-soft);
+}
+
+.control-box.is-readonly input {
+  color: var(--color-muted);
+}
+
+/* Oculta las flechitas del campo numérico, que el diseño no lleva */
+.control-box input[type="number"]::-webkit-outer-spin-button,
+.control-box input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.control-box input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stepper-button {
+  padding: 0;
+  line-height: 0;
+  background: none;
+  border: 0;
+}
+
+.control-help {
+  margin: 8px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.condition-box {
+  min-height: 44px;
+  gap: 10px;
+}
+
+.condition-text {
+  color: var(--color-dark);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.optional-text {
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.control-textarea {
+  height: 76px;
+  min-height: 76px;
+  padding: 14px;
+  color: var(--color-dark);
+  font-size: 14px;
+  line-height: normal;
+  border-color: var(--color-border);
+  border-radius: 12px;
+}
+
+.form-footer {
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.form-note-title {
+  color: var(--color-dark);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.form-note-text {
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.form-notice {
+  color: var(--color-dark);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.section-title {
+  color: var(--color-dark);
+  font-size: 18px;
+  line-height: normal;
+}
+
+.section-subtitle {
+  margin-top: 6px;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: normal;
+}
+
+/* En pantallas chicas se reducen los márgenes laterales */
+@media (max-width: 991.98px) {
+  .alerts-header {
+    padding: 24px 16px;
+  }
+
+  .alerts-content {
+    padding: 0 16px 32px;
+  }
+
+  .condition-col {
+    padding-left: 0;
+  }
+}

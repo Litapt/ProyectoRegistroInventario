@@ -52,4 +52,7 @@ Esta es la estructura que vamos a usar. Créala poco a poco, conforme se necesit
 ## Cosas a tener en cuenta
 - Los precios y existencias son datos sensibles del negocio: no los borres ni los reinicies en pruebas.
 <!-- TODO: agrega aquí archivos que no se deben tocar, reglas del negocio (por ejemplo, cómo se calcula el stock mínimo), etc. -->
-- Colores para mantener consistencia: (FFFFFF, 4F46E5, 9CA3AF, 111827, 374151, 6B7280, D1D5DB, F3F4F6)
+- Colores para mantener consistencia: (FFFFFF, 4F46E5, 9CA3AF, 111827, 374151, 6B7280, D1D5DB, F3F4F6).
+- Organiza las interfaces dentro de las carpetas que corresponden, si algo es para el administrador, debe de ir en la carpeta de administador, no debe de jalar nada de la carpeta de almacenista ni hacer referencia a lo que el vendedor tiene a no ser que se trate de intercambio de datos a través de la base de datos o la funcionalidad del servidor, de ahí en fuera, no puede pasar de una interfaz de administrador a una de vendedor o algo así.
+- Las imágenes se van a guardar en la carpeta de imágenes y solamente ahí.
+- En todas las interfaces en las que se muestre un elemento que diga "Marca de agua del equipo", debe de sustituirse por la verdadera imagen del equipo, que se encuentra en la ruta C:\Program Files (x86)\EasyPHP-Devserver-17\eds-www\RegistroInventario\imagenes y se llama ImagenEquipoNF-192.

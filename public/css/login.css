@@ -1,0 +1,118 @@
+/* Estilos que solo usa la página de inicio de sesión. */
+
+/* Estos textos usan el interlineado normal del diseño, no el 1.5 de Bootstrap */
+.login-title,
+.login-label,
+.login-link,
+.login-register {
+  line-height: normal;
+}
+
+/* El relleno de abajo compensa la barra de menú para que la tarjeta
+   quede centrada en toda la pantalla, como en el diseño. */
+.login-main {
+  padding: 32px 16px 112px;
+}
+
+.login-card {
+  width: 480px;
+  max-width: 100%;
+  padding: 48px;
+  gap: 32px;
+  border-radius: 24px;
+  box-shadow: 0 12px 16px rgba(0, 0, 0, 0.08);
+}
+
+.login-icon {
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-soft);
+  border-radius: 16px;
+}
+
+.login-title {
+  color: var(--color-dark);
+  font-size: 28px;
+}
+
+.login-subtitle {
+  color: var(--color-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.login-form {
+  gap: 32px;
+}
+
+.login-fields {
+  gap: 20px;
+}
+
+.login-label {
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.login-input {
+  height: 52px;
+  padding: 14px 16px;
+  color: var(--color-dark);
+  font-size: 15px;
+  border-color: var(--color-border);
+  border-radius: 12px;
+}
+
+.login-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+.login-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+/* Deja espacio a la derecha para que el texto no quede debajo del ojo */
+.login-input-password {
+  padding-right: 48px;
+}
+
+.btn-eye {
+  right: 16px;
+  padding: 0;
+  line-height: 0;
+  background: none;
+  border: 0;
+}
+
+.login-link {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+.btn-login {
+  --bs-btn-color: var(--color-white);
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-color: var(--color-white);
+  --bs-btn-hover-bg: var(--color-primary);
+  --bs-btn-hover-border-color: var(--color-dark);
+  --bs-btn-active-color: var(--color-white);
+  --bs-btn-active-bg: var(--color-primary);
+  --bs-btn-active-border-color: var(--color-dark);
+  --bs-btn-font-size: 16px;
+  --bs-btn-border-radius: 12px;
+  height: 52px;
+}
+
+.login-register {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+/* En pantallas chicas la tarjeta usa menos relleno */
+@media (max-width: 575.98px) {
+  .login-card {
+    padding: 32px 24px;
+  }
+}

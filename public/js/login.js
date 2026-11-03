@@ -1,9 +1,9 @@
-// Muestra u oculta la contraseña al hacer clic en el ícono del ojo
+// Botón del ojo: muestra u oculta la contraseña que se está escribiendo.
 const passwordInput = document.getElementById('password');
-const toggleButton = document.getElementById('togglePassword');
+const togglePasswordButton = document.getElementById('togglePassword');
 
-toggleButton.addEventListener('click', function () {
+togglePasswordButton.addEventListener('click', function () {
   const isHidden = passwordInput.type === 'password';
   passwordInput.type = isHidden ? 'text' : 'password';
-  toggleButton.setAttribute('aria-label', isHidden ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  togglePasswordButton.setAttribute('aria-label', isHidden ? 'Ocultar contraseña' : 'Mostrar contraseña');
 });

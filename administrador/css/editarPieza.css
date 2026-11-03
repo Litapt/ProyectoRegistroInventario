@@ -1,0 +1,227 @@
+/* Estilos que solo usa la pantalla para editar una pieza.
+   El contenido y las tarjetas vienen de registrarPieza.css;
+   la notificación de éxito viene de ajusteStock.css. */
+
+.edit-content {
+  padding-bottom: 32px;
+}
+
+/* Botón de guardar: gris mientras no hay cambios */
+.save-box {
+  flex: 0 0 auto;
+}
+
+.btn-save {
+  --bs-btn-disabled-color: var(--color-placeholder);
+  --bs-btn-disabled-bg: var(--color-border);
+  --bs-btn-disabled-border-color: var(--color-border);
+  --bs-btn-disabled-opacity: 1;
+  width: 202px;
+  height: 48px;
+}
+
+.save-status {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: normal;
+}
+
+.save-status.has-changes {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Encabezado y cuerpo de cada apartado */
+.edit-section-header {
+  min-height: 89px;
+  padding: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.edit-section-body {
+  gap: 20px;
+  padding: 24px;
+}
+
+.edit-mode-tag {
+  padding: 6px 12px;
+  color: var(--color-primary);
+  font-size: 13px;
+  line-height: normal;
+  background-color: var(--color-soft);
+  border-radius: 8px;
+}
+
+/* Filas de campos: se reparten el ancho y bajan de línea si no caben */
+.edit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.edit-row-wide {
+  gap: 32px;
+}
+
+.edit-col {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.edit-col-main {
+  flex: 2 1 400px;
+  min-width: 0;
+}
+
+/* Las tres tarjetas de abajo */
+.edit-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.edit-card {
+  flex: 1 1 400px;
+  min-width: 0;
+  min-height: 336px;
+}
+
+/* Campo editable */
+.edit-label-row {
+  min-height: 18px;
+  margin-bottom: 8px;
+}
+
+.edit-label {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.edit-flag {
+  color: var(--color-primary);
+  font-size: 12px;
+  line-height: normal;
+}
+
+.edit-box {
+  height: 48px;
+  padding: 0 14px;
+  gap: 8px;
+  cursor: text;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.edit-box-textarea {
+  height: 64px;
+  padding: 12px 14px;
+}
+
+.edit-box:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+/* Un campo con cambios sin guardar se distingue de los demás */
+.edit-field.is-modified .edit-box {
+  background-color: var(--color-soft);
+  border-color: var(--color-primary);
+}
+
+.edit-input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  color: var(--color-dark);
+  font-size: 16px;
+  line-height: 24px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+textarea.edit-input {
+  display: block;
+  resize: none;
+}
+
+/* Lista de ubicación con la flecha del diseño */
+.edit-select {
+  padding-right: 24px;
+  cursor: pointer;
+  background: url("../../imagenes/icon-chevron-down.svg") no-repeat right center / 16px 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Campo de solo vista: no se puede escribir en él */
+.edit-box-readonly {
+  cursor: default;
+  background-color: var(--color-soft);
+}
+
+.edit-box-readonly:focus-within {
+  border-color: var(--color-border);
+  box-shadow: none;
+}
+
+.edit-box-readonly .edit-input {
+  cursor: default;
+}
+
+.edit-help {
+  margin-top: 8px !important;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.edit-help-link {
+  color: var(--color-primary);
+}
+
+.edit-input-large,
+.edit-box-large .edit-affix {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Oculta las flechitas de los campos numéricos, que el diseño no lleva */
+.edit-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.edit-input[type="number"]::-webkit-outer-spin-button,
+.edit-input[type="number"]::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.edit-affix {
+  flex-shrink: 0;
+  color: var(--color-dark);
+  line-height: 24px;
+}
+
+.edit-before {
+  margin-top: 8px !important;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* Nota inferior */
+.edit-note {
+  padding: 0 4px;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 20px;
+}

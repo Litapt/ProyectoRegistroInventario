@@ -1,0 +1,349 @@
+/* Estilos que solo usa la pantalla para registrar una pieza.
+   Los colores y el menú superior están en public/css/styles.css. */
+
+/* Estos textos usan el interlineado normal del diseño, no el 1.5 de Bootstrap */
+.breadcrumb-link,
+.breadcrumb-current,
+.page-title,
+.page-subtitle,
+.back-link,
+.form-section-title,
+.form-section-text,
+.field-label,
+.status-tag,
+.status-title,
+.tips-title,
+.tip-title,
+.stock-tip-title {
+  line-height: normal;
+}
+
+/* Contenido de la página */
+.register-content {
+  padding: 32px 80px 40px;
+}
+
+/* Ruta de navegación */
+.breadcrumb-link {
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.breadcrumb-link:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb-current {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+/* Título de la pantalla */
+.page-title {
+  color: var(--color-dark);
+  font-size: 32px;
+  letter-spacing: -0.7px;
+}
+
+.page-subtitle {
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.back-link {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+/* Tarjeta del formulario y sus secciones */
+.register-form {
+  /* min-width evita que un texto largo ensanche la tarjeta */
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+}
+
+.form-section {
+  gap: 20px;
+}
+
+.form-section-soft {
+  background-color: var(--color-soft);
+}
+
+.form-section-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-soft);
+  border-radius: 12px;
+}
+
+/* Sobre fondo gris, el ícono va en blanco para que se distinga */
+.form-section-soft .form-section-icon {
+  background-color: var(--color-white);
+}
+
+.form-section-title {
+  color: var(--color-dark);
+  font-size: 18px;
+}
+
+.form-section-text {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.form-divider {
+  border-top: 1px solid var(--color-border);
+  opacity: 1;
+}
+
+/* Fila de campos: se reparten el ancho y bajan de línea si no caben */
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.field-row > div {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.required-mark {
+  color: var(--color-primary);
+}
+
+/* Campos de texto y lista de ubicación */
+.field-input {
+  height: 52px;
+  padding: 14px 16px;
+  color: var(--color-dark);
+  font-size: 15px;
+  line-height: 1.5;
+  border-color: var(--color-border);
+  border-radius: 12px;
+}
+
+.field-input::placeholder,
+.affix-input::placeholder {
+  color: var(--color-placeholder);
+}
+
+.field-input:focus,
+.field-affix:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+.field-textarea {
+  height: 76px;
+  min-height: 76px;
+  resize: vertical;
+}
+
+/* Lista desplegable con la flecha del diseño */
+.field-select {
+  padding-right: 44px;
+  background-image: url("../../imagenes/icon-chevron-down.svg");
+  background-position: right 16px center;
+  background-size: 16px 16px;
+}
+
+/* Campos con símbolo o unidad a un lado: $ 185.00 o 24 unidades */
+.field-affix {
+  height: 52px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.affix-input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--color-dark);
+  font-size: 15px;
+  line-height: 1.5;
+  background: transparent;
+  border: 0;
+  outline: 0;
+}
+
+/* Oculta las flechitas de los campos numéricos, que el diseño no lleva */
+.affix-input::-webkit-outer-spin-button,
+.affix-input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.affix-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.affix-symbol {
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.affix-unit {
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+/* Barra de acciones del formulario */
+.form-actions {
+  background-color: var(--color-soft);
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-clear {
+  padding: 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  background: none;
+  border: 0;
+}
+
+.btn-clear:hover {
+  color: var(--color-primary);
+}
+
+.btn-cancel,
+.btn-register {
+  --bs-btn-padding-x: 24px;
+  --bs-btn-font-size: 14px;
+  --bs-btn-border-radius: 12px;
+  height: 52px;
+}
+
+.btn-cancel {
+  --bs-btn-color: var(--color-text);
+  --bs-btn-bg: var(--color-white);
+  --bs-btn-border-color: var(--color-border);
+  --bs-btn-hover-color: var(--color-text);
+  --bs-btn-hover-bg: var(--color-white);
+  --bs-btn-hover-border-color: var(--color-primary);
+  --bs-btn-active-color: var(--color-text);
+  --bs-btn-active-bg: var(--color-white);
+  --bs-btn-active-border-color: var(--color-primary);
+}
+
+.btn-register {
+  --bs-btn-color: var(--color-white);
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-color: var(--color-white);
+  --bs-btn-hover-bg: var(--color-primary);
+  --bs-btn-hover-border-color: var(--color-dark);
+  --bs-btn-active-color: var(--color-white);
+  --bs-btn-active-bg: var(--color-primary);
+  --bs-btn-active-border-color: var(--color-dark);
+}
+
+/* Columna de apoyo */
+.support-panel {
+  width: 400px;
+  max-width: 100%;
+}
+
+.support-card {
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+}
+
+.support-card-soft {
+  background-color: var(--color-soft);
+}
+
+.status-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-primary);
+  border-radius: 12px;
+}
+
+.status-tag {
+  padding: 6px 12px;
+  color: var(--color-primary);
+  font-size: 13px;
+  background-color: var(--color-white);
+  border-radius: 8px;
+}
+
+.status-title {
+  color: var(--color-dark);
+  font-size: 20px;
+}
+
+.status-text {
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.required-note {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tips-title {
+  color: var(--color-dark);
+  font-size: 16px;
+}
+
+.tip-content {
+  gap: 6px;
+}
+
+.tip-title {
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.tip-text {
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.stock-tip {
+  padding: 20px;
+  background-color: var(--color-soft);
+  border-radius: 12px;
+}
+
+.stock-tip-title {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+.stock-tip-text {
+  color: var(--color-text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* En pantallas medianas la columna de apoyo usa todo el ancho */
+@media (max-width: 1199.98px) {
+  .support-panel {
+    width: 100%;
+  }
+}
+
+/* En pantallas más chicas se reducen los márgenes laterales */
+@media (max-width: 767.98px) {
+  .register-content {
+    padding: 24px 16px;
+  }
+}
