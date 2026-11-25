@@ -17,9 +17,9 @@
     <header class="app-header d-flex align-items-center justify-content-between px-4 py-3 bg-white">
         <a href="{{ route('login') }}" class="d-flex align-items-center gap-12 text-decoration-none">
             <span class="logo-box d-flex align-items-center justify-content-center">
-                <img src="{{ asset('imagenes/logo.svg') }}" width="20" height="20" alt="">
+                <img src="{{ \App\Support\Tienda::logo() }}" width="20" height="20" alt="" class="logo-tienda">
             </span>
-            <span class="brand-name fw-bold">{{ config('app.name') }}</span>
+            <span class="brand-name fw-bold">{{ \App\Support\Tienda::nombre() }}</span>
         </a>
         <a href="#" class="header-link fw-medium text-decoration-none">Ayuda</a>
     </header>

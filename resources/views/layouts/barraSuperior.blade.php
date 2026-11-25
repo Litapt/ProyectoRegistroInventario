@@ -16,14 +16,16 @@
 @endpush
 
 @section('contenido')
-    @php($trabajador = auth()->user())
+    @php
+        $trabajador = auth()->user();
+    @endphp
 
     <header class="topbar d-flex align-items-center justify-content-between">
         <a href="{{ route($trabajador->rutaInicio()) }}" class="d-flex align-items-center gap-3 text-decoration-none">
             <span class="topbar-logo d-flex align-items-center justify-content-center">
-                <img src="{{ asset('imagenes/logo.svg') }}" width="20" height="20" alt="">
+                <img src="{{ \App\Support\Tienda::logo() }}" width="20" height="20" alt="" class="logo-tienda">
             </span>
-            <span class="topbar-brand fw-bold">{{ config('app.name') }}</span>
+            <span class="topbar-brand fw-bold">{{ \App\Support\Tienda::nombre() }}</span>
         </a>
 
         <div class="d-flex align-items-center gap-3">

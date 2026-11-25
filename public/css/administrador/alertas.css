@@ -1,0 +1,14 @@
+/* Alertas · Stock e Incidencias (Figma Page 2) */
+.contador-gris {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 26px;
+  margin-left: 8px; padding: 0 8px; border-radius: 6px; background: #F3F4F6; color: var(--c-muted); font-size: 13px;
+}
+.tab-app.is-active .contador-gris { background: var(--c-primary-soft); color: var(--c-primary); }
+.piezas-alerta { color: var(--c-danger); font-weight: 700; white-space: nowrap; }
+.piezas-alerta.es-bajo { color: #C2410C; }
+.prioridad { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.prioridad::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.prioridad-ALTA { color: var(--c-danger); }
+.prioridad-MEDIA { color: #C2410C; }
+.prioridad-BAJA { color: var(--c-muted); }
+.descripcion-corta { max-width: 320px; color: var(--c-muted); }

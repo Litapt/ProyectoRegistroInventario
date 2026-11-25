@@ -24,23 +24,32 @@
         $trabajador = auth()->user();
         $rutaInicio = $trabajador->rutaInicio();
         $menuActivo = trim($__env->yieldContent('menu'));
+        // "administrador" o "gerente": cada rol usa las rutas de su propia carpeta
+        $carpeta = strtok($rutaInicio, '.');
+        // Nombre completo de la ruta si ya está programada para este rol; si no, null ("Pronto")
+        $rutaDe = fn (string $nombre) => \Illuminate\Support\Facades\Route::has("{$carpeta}.{$nombre}") ? "{$carpeta}.{$nombre}" : null;
         $opciones = [
             ['clave' => 'inicio', 'texto' => 'Inicio', 'icono' => 'icon-home.svg', 'permiso' => null, 'ruta' => $rutaInicio],
-            ['clave' => 'ventas', 'texto' => 'Ventas', 'icono' => 'icon-cart-2.svg', 'permiso' => 'ventas.consultar', 'ruta' => null],
-            ['clave' => 'clientes', 'texto' => 'Clientes', 'icono' => 'icon-users.svg', 'permiso' => 'clientes.gestionar', 'ruta' => null],
-            ['clave' => 'productos', 'texto' => 'Productos', 'icono' => 'icon-box.svg', 'permiso' => 'productos.consultar', 'ruta' => null],
-            ['clave' => 'usuarios', 'texto' => 'Usuarios', 'icono' => 'icon-user-2.svg', 'permiso' => 'usuarios.gestionar', 'ruta' => null],
-            ['clave' => 'alertas', 'texto' => 'Alertas', 'icono' => 'icon-bell-2.svg', 'permiso' => 'solicitudes.autorizar', 'ruta' => null],
-            ['clave' => 'configuracion', 'texto' => 'Configuración', 'icono' => 'icon-settings-2.svg', 'permiso' => 'configuracion.editar', 'ruta' => null],
+            ['clave' => 'ventas', 'texto' => 'Ventas', 'icono' => 'icon-cart-2.svg', 'permiso' => 'ventas.registrar', 'ruta' => $rutaDe('ventas.index')],
+            ['clave' => 'clientes', 'texto' => 'Clientes', 'icono' => 'icon-users.svg', 'permiso' => 'clientes.gestionar', 'ruta' => $rutaDe('clientes.index')],
+            ['clave' => 'productos', 'texto' => 'Productos', 'icono' => 'icon-box.svg', 'permiso' => 'productos.consultar', 'ruta' => $rutaDe('productos.index')],
+            ['clave' => 'usuarios', 'texto' => 'Usuarios', 'icono' => 'icon-user-2.svg', 'permiso' => 'usuarios.gestionar', 'ruta' => $rutaDe('usuarios.index')],
+            ['clave' => 'alertas', 'texto' => 'Alertas', 'icono' => 'icon-bell-2.svg', 'permiso' => 'solicitudes.autorizar', 'ruta' => $rutaDe('alertas.index')],
+            ['clave' => 'configuracion', 'texto' => 'Configuración', 'icono' => 'icon-settings-2.svg', 'permiso' => 'configuracion.editar', 'ruta' => $rutaDe('configuracion.index')],
         ];
+        // Número rojo junto a "Alertas": productos por reponer + incidencias abiertas
+        $pendientesAlertas = $trabajador->puede('solicitudes.autorizar') && $rutaDe('alertas.index')
+            ? \App\Models\Producto::requierenAtencion()->count()
+                + \App\Models\Solicitud::where('tipoSolicitud', 'INCIDENCIA')->whereIn('estado', ['PENDIENTE', 'EN_REVISION'])->count()
+            : 0;
     @endphp
 
     <header class="topbar d-flex align-items-center justify-content-between">
         <a href="{{ route($rutaInicio) }}" class="d-flex align-items-center gap-3 text-decoration-none">
             <span class="topbar-logo d-flex align-items-center justify-content-center">
-                <img src="{{ asset('imagenes/logo.svg') }}" width="20" height="20" alt="">
+                <img src="{{ \App\Support\Tienda::logo() }}" width="20" height="20" alt="" class="logo-tienda">
             </span>
-            <span class="topbar-brand fw-bold">{{ config('app.name') }}</span>
+            <span class="topbar-brand fw-bold">{{ \App\Support\Tienda::nombre() }}</span>
         </a>
 
         <div class="d-flex align-items-center gap-3">
@@ -72,6 +81,9 @@
                            @if ($menuActivo === $opcion['clave']) aria-current="page" @endif>
                             <span class="icono" style="--icono: url('{{ asset('imagenes/' . $opcion['icono']) }}')"></span>
                             <span class="flex-grow-1">{{ $opcion['texto'] }}</span>
+                            @if ($opcion['clave'] === 'alertas' && $pendientesAlertas > 0)
+                                <span class="sidebar-contador">{{ $pendientesAlertas > 99 ? '99+' : $pendientesAlertas }}</span>
+                            @endif
                         </a>
                     @endif
                 @endforeach
@@ -85,7 +97,7 @@
                         Sistema actualizado
                     </div>
                 </div>
-                <p class="sidebar-footer m-0 px-1">{{ config('app.name') }} · Panel de {{ mb_strtolower($trabajador->rolTexto()) }}</p>
+                <p class="sidebar-footer m-0 px-1">{{ \App\Support\Tienda::nombre() }} · Panel de {{ mb_strtolower($trabajador->rolTexto()) }}</p>
             </div>
         </aside>
 

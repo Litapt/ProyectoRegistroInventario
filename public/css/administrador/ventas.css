@@ -1,0 +1,51 @@
+/* Ventas · Registrar venta (Figma Page 2) */
+
+.tab-app.is-pending { cursor: default; opacity: .7; }
+
+.notice-ok { background: var(--c-success-soft); color: var(--c-success); }
+
+.buscador-venta { min-width: 220px; flex-basis: 260px; }
+
+.cliente-elegido {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--c-primary);
+  border-radius: 8px;
+  background: var(--c-primary-soft);
+}
+
+.result-item:disabled { cursor: not-allowed; opacity: .55; background: #FFFFFF; }
+.result-item .result-precio { color: var(--c-dark); font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+.tabla-venta td { vertical-align: middle; }
+.tabla-venta .celda-codigo { color: var(--c-muted); font-size: 12px; white-space: nowrap; }
+.tabla-venta .aviso-stock { color: var(--c-warning); font-size: 12px; }
+
+.text-primary-app { color: var(--c-primary); }
+
+/* El resumen se queda visible al bajar en pantallas grandes */
+@media (min-width: 1200px) {
+  .resumen-venta { position: sticky; top: 16px; }
+}
+
+.botones-cotizacion { flex: 1 1 150px; min-width: 0; white-space: normal; font-size: 14px; padding-left: 10px; padding-right: 10px; }
+
+/* Número de solicitudes pendientes en la pestaña */
+.contador-pestana {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px;
+  border-radius: 999px; background: var(--c-danger); color: #FFFFFF;
+  font-size: 11px; font-weight: 700;
+}
+
+/* Ventana "Editar venta" */
+.renglon-edicion { display: grid; grid-template-columns: minmax(0, 1fr) auto 110px auto; gap: 12px; align-items: center; }
+.renglon-edicion + .renglon-edicion { border-top: 1px solid var(--c-border); padding-top: 12px; }
+@media (max-width: 575.98px) {
+  .renglon-edicion { grid-template-columns: minmax(0, 1fr) auto; }
+}
+.cambio-mas { color: var(--c-success); font-weight: 600; }
+.cambio-menos { color: var(--c-danger); font-weight: 600; }

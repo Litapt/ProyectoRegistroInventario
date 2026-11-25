@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
     Tabla: configuraciones (llave idConfiguracion).
 
     Leer:     Configuracion::valor('iva', '16')
+    Guardar:  Configuracion::guardar('iva', '16', $trabajador)
 */
 class Configuracion extends Model
 {
@@ -21,6 +22,16 @@ class Configuracion extends Model
     protected function casts(): array
     {
         return ['fechaActualizacion' => 'datetime'];
+    }
+
+    /* Guarda (o crea) una clave con quién y cuándo la cambió */
+    public static function guardar(string $clave, ?string $valor, ?Trabajador $quien = null): void
+    {
+        $fila = static::firstOrNew(['clave' => $clave]);
+        $fila->valor = $valor;
+        $fila->fechaActualizacion = now();
+        $fila->fk_idTrabajadorActualizacion = $quien?->idTrabajador;
+        $fila->save();
     }
 
     /* Valor de una clave; si no existe o está vacía regresa $porDefecto */

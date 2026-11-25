@@ -681,3 +681,64 @@ body.admin-body {
   color: var(--c-text);
   font-size: 14px;
 }
+
+/* ---------- Piezas comunes de formularios y ventanas ---------- */
+.btn-app-soft { background: var(--c-primary-soft); color: var(--c-primary); }
+.btn-app-soft:hover { background: #E0E7FF; color: var(--c-primary-dark); }
+
+/* Texto chico de ayuda debajo de un campo */
+.field-help {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+/* "MXN" antes del precio y "piezas" después de la cantidad */
+.input-prefix,
+.input-suffix {
+  border-color: var(--c-border-strong);
+  background: var(--c-bg);
+  color: var(--c-muted);
+  font-size: 13px;
+}
+
+.input-group .input-app { min-width: 0; }
+
+/* Recuadro gris con el nombre de lo que se va a modificar */
+.tarjeta-gris {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--c-bg);
+}
+
+.modal-app .modal-footer { border-top: 1px solid var(--c-border); }
+
+/* Texto de ejemplo de los campos en gris claro, para que no parezca un valor ya escrito */
+.input-app::placeholder { color: var(--c-light); opacity: 1; }
+
+/* Caja de búsqueda de las consultas (Productos, Clientes...) */
+.filtro-buscar {
+  flex: 1 1 280px;
+  max-width: 360px;
+}
+
+/* Lo que se escribe sale en mayúsculas (códigos, RFC), pero el texto de ejemplo no */
+.mayusculas { text-transform: uppercase; }
+.mayusculas::placeholder { text-transform: none; }
+
+/* Interruptor (Estado del usuario) con el color de la aplicación */
+.form-switch .form-check-input { width: 2.5em; height: 1.35em; cursor: pointer; }
+.form-switch .form-check-input:checked { background-color: var(--c-primary); border-color: var(--c-primary); }
+.form-switch .form-check-input:focus { box-shadow: 0 0 0 .2rem var(--c-primary-soft); border-color: var(--c-primary); }
+
+/* Logo que sube el administrador (Configuración): que no se deforme */
+.logo-tienda { object-fit: contain; }
+
+/* Número rojo junto a "Alertas" en el menú (Figma) */
+.sidebar-contador {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 20px; padding: 0 6px; border-radius: 6px;
+  background: var(--c-danger-soft); color: var(--c-danger); font-size: 12px; font-weight: 600;
+}
+
+/* Foto de perfil en el botón del usuario (si subió una) */
+.user-avatar-foto { object-fit: cover; padding: 0; }

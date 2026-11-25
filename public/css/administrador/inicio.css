@@ -1,0 +1,34 @@
+/* Inicio del administrador (Figma Page 2) */
+.tarjeta-dato { padding: 20px; height: 100%; display: flex; flex-direction: column; gap: 10px; }
+.dato-titulo { color: var(--c-muted); font-size: 14px; }
+.dato-valor { color: var(--c-dark); font-size: 30px; font-weight: 700; line-height: 1.1; }
+.dato-pie { color: var(--c-muted); font-size: 13px; }
+.dato-icono {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--c-primary-soft); color: var(--c-primary);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.dato-icono-alerta { background: var(--c-warning-soft); color: var(--c-warning); }
+.cambio-sube { color: var(--c-success); font-weight: 600; }
+.cambio-baja { color: var(--c-danger); font-weight: 600; }
+.texto-alerta { color: #C2410C; }
+
+.semana-total { color: var(--c-dark); font-size: 26px; font-weight: 700; }
+
+.grafica { display: flex; align-items: stretch; gap: 12px; height: 220px; padding-top: 8px; }
+.grafica-columna { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.grafica-monto { font-size: 11px; color: var(--c-muted); white-space: nowrap; height: 16px; }
+.grafica-barra-caja { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid var(--c-border); }
+.grafica-barra { width: 100%; max-width: 32px; border-radius: 6px 6px 0 0; background: #C7D2FE; }
+.grafica-barra.es-actual { background: var(--c-primary); }
+.grafica-etiqueta { font-size: 12px; color: var(--c-muted); white-space: nowrap; }
+.grafica-etiqueta.es-actual { color: var(--c-primary); font-weight: 600; }
+
+@media (max-width: 575.98px) {
+  .grafica { gap: 4px; }
+  .grafica-monto { display: none; }
+  .grafica-etiqueta { font-size: 10px; }
+}
+
+.aviso-inventario { padding: 14px 16px; border-radius: 8px; }
+.aviso-bajo { background: #FEF9C3; }
+.aviso-agotado { background: var(--c-danger-soft); }

@@ -31,7 +31,7 @@ test('la migración crea las 23 tablas y los catálogos', function () {
     expect(DB::table('roles')->count())->toBe(5)
         ->and(DB::table('permisos')->count())->toBe(17)
         ->and(DB::table('rolPermisos')->count())->toBe(17)
-        ->and(DB::table('motivos')->count())->toBe(17)
+        ->and(DB::table('motivos')->count())->toBe(26)   // 17 iniciales + 9 de devolución
         ->and(DB::table('folios')->count())->toBe(6)
         ->and(DB::table('configuraciones')->count())->toBe(16)
         ->and(Configuracion::valor('iva'))->toBe('16');
@@ -54,7 +54,7 @@ test('cada rol inicia sesión con el mismo formulario y llega a su pantalla', fu
 
     $this->get(route($ruta))
         ->assertOk()
-        ->assertSee('Bienvenido, Laura')
+        ->assertSee('Laura')   // su nombre en el menú de usuario
         ->assertSee('Cerrar sesión');
 })->with([
     'administrador' => [Trabajador::ROL_ADMINISTRADOR, 'administrador.inicio'],

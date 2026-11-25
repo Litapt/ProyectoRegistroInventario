@@ -1,0 +1,368 @@
+/* Pantalla "Registrar ajuste de stock" (Figma: Registro de ajuste de stock).
+   Los paneles, títulos y botones vienen de panel.css. */
+
+.adjust-section-header {
+  border-bottom: 1px solid var(--c-border-strong);
+}
+
+.adjust-label {
+  display: block;
+  float: none;
+  width: auto;
+  margin-bottom: 8px;
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: normal;
+}
+
+/* Las dos columnas se reparten el ancho y bajan de línea si no caben */
+.adjust-columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px;
+}
+
+.adjust-capture {
+  flex: 1 1 480px;
+  min-width: 0;
+}
+
+.adjust-preview {
+  flex: 1 1 420px;
+  min-width: 0;
+  gap: 20px;
+  padding: 24px;
+  background-color: var(--c-bg-soft);
+  border-radius: 12px;
+}
+
+/* Opciones de entrada y egreso */
+.move-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.move-option {
+  flex: 1 1 260px;
+  min-height: 68px;
+  padding: 16px;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: 12px;
+}
+
+.move-option.is-selected {
+  background-color: var(--c-bg-soft);
+  border-color: var(--c-primary);
+}
+
+.move-option:focus-within {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+.option-title {
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.move-option.is-selected .option-title {
+  color: var(--c-primary);
+}
+
+.option-text {
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: normal;
+}
+
+.option-radio {
+  width: 18px;
+  height: 18px;
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: 50%;
+}
+
+.move-option.is-selected .option-radio {
+  border: 5px solid var(--c-primary);
+}
+
+/* Cada opción muestra el ícono que corresponde a su estado */
+.option-icon-active,
+.move-option.is-selected .option-icon-idle {
+  display: none;
+}
+
+.move-option.is-selected .option-icon-active {
+  display: block;
+}
+
+/* Cantidad */
+.quantity-box {
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 12px;
+}
+
+.quantity-box:focus-within {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+.quantity-input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--c-dark);
+  font-size: 15px;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.quantity-input::placeholder {
+  color: var(--c-light);
+  font-weight: 400;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.quantity-unit {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.quantity-help {
+  margin: 8px 0 0;
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: normal;
+}
+
+/* Vista previa del ajuste */
+.preview-title {
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.preview-value {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.preview-label {
+  color: var(--c-muted);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.preview-number {
+  color: var(--c-dark);
+  font-size: 28px;
+  line-height: normal;
+}
+
+.preview-result .preview-label,
+.preview-result .preview-number {
+  color: var(--c-primary);
+}
+
+.preview-operation {
+  color: var(--c-muted);
+  font-size: 18px;
+  line-height: normal;
+  white-space: pre;
+}
+
+.preview-footer {
+  padding-top: 16px;
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: normal;
+  border-top: 1px solid var(--c-border-strong);
+}
+
+/* Especificación del egreso */
+.reason-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--c-border-strong);
+}
+
+.reason-info {
+  flex: 0 1 380px;
+  min-width: 0;
+}
+
+.reason-title {
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: normal;
+}
+
+.reason-text {
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reason-note {
+  color: var(--c-primary);
+  font-size: 13px;
+  line-height: normal;
+}
+
+.reason-input {
+  flex: 1 1 400px;
+  min-width: 0;
+  height: 88px;
+  min-height: 88px;
+  padding: 16px;
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: 1.5;
+  border-color: var(--c-border-strong);
+  border-radius: 12px;
+}
+
+.reason-input::placeholder {
+  color: var(--c-light);
+}
+
+.reason-input:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+.reason-input:disabled {
+  background-color: var(--c-bg-soft);
+}
+
+/* Datos generales de la pieza */
+.readonly-tag {
+  padding: 6px 12px;
+  color: var(--c-primary);
+  font-size: 13px;
+  line-height: normal;
+  background-color: var(--c-bg-soft);
+  border-radius: 8px;
+}
+
+.data-head,
+.data-row {
+  gap: 32px;
+  padding: 0 24px;
+}
+
+.data-head {
+  min-height: 44px;
+  color: var(--c-muted);
+  font-size: 13px;
+  font-weight: 600;
+  background-color: var(--c-bg-soft);
+  border-bottom: 1px solid var(--c-border-strong);
+}
+
+.data-row {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 58px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--c-border-strong);
+}
+
+.data-row-last {
+  border-bottom: 0;
+}
+
+.data-pair {
+  display: flex;
+  flex: 1 1 360px;
+  align-items: center;
+  min-width: 0;
+  gap: 24px;
+}
+
+.data-label {
+  flex: 0 0 200px;
+  color: inherit;
+  font-size: inherit;
+  line-height: normal;
+}
+
+.data-row .data-label {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.data-value,
+.data-value-head {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.data-value {
+  color: var(--c-dark);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Revisión y confirmación */
+.confirm-summary {
+  flex-basis: 320px;
+  min-width: 0;
+  gap: 6px;
+}
+
+.summary-title {
+  color: var(--c-dark);
+  font-size: 15px;
+  line-height: normal;
+}
+
+.summary-text {
+  color: var(--c-muted);
+  font-size: 13px;
+  line-height: normal;
+}
+
+.adjust-button {
+  height: 48px;
+}
+
+.adjust-cancel {
+  --bs-btn-color: var(--c-muted);
+  --bs-btn-hover-color: var(--c-muted);
+  --bs-btn-active-color: var(--c-muted);
+  min-width: 136px;
+}
+
+
+/* Ícono cuadrado junto al título de cada sección */
+.adjust-section-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--c-primary-soft);
+}
+
+/* Historial de movimientos */
+.mov-mas { color: var(--c-success); }
+.mov-menos { color: var(--c-danger); }

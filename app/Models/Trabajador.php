@@ -62,6 +62,17 @@ class Trabajador extends Authenticatable
     // Permisos ya leídos de la base (para no consultarlos en cada botón)
     private ?array $permisosCargados = null;
 
+    /*
+        La fecha la pone Laravel (zona horaria de config/app.php) y no MySQL,
+        para que todas las fechas del sistema usen la misma hora.
+    */
+    protected static function booted(): void
+    {
+        static::creating(function (self $modelo) {
+            $modelo->fechaCreacion ??= now();
+        });
+    }
+
     protected function casts(): array
     {
         return [
@@ -132,6 +143,37 @@ class Trabajador extends Authenticatable
     public function nombreCompleto(): string
     {
         return trim($this->nombres . ' ' . $this->apellidoPaterno . ' ' . $this->apellidoMaterno);
+    }
+
+    /* Dirección de la foto de perfil, o null si no tiene (entonces se muestran sus iniciales) */
+    public function urlFoto(): ?string
+    {
+        $foto = $this->getAttribute('foto');
+
+        return $foto && is_file(public_path($foto)) ? asset($foto) : null;
+    }
+
+    /* Código que se ve en Usuarios: USR-0001 */
+    public function codigo(): string
+    {
+        return 'USR-' . str_pad((string) $this->idTrabajador, 4, '0', STR_PAD_LEFT);
+    }
+
+    /* Datos que la ventana "Editar usuario" necesita (nunca la contraseña) */
+    public function datosParaEditar(): array
+    {
+        return [
+            'codigo' => $this->codigo(),
+            'nombre' => $this->nombreCompleto(),
+            'nombres' => $this->nombres,
+            'apellidoPaterno' => $this->apellidoPaterno,
+            'apellidoMaterno' => $this->apellidoMaterno,
+            'rfc' => $this->RFC,
+            'correo' => $this->correoElectronico,
+            'telefono' => $this->telefono,
+            'rol' => $this->fk_idRol,
+            'activo' => (bool) $this->activo,
+        ];
     }
 
     /* "Carlos Méndez" → "CM" (círculo del menú de usuario) */

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CierreSesionPorInactividad;
 use App\Http\Middleware\RequierePermiso;
 use App\Http\Middleware\RequiereRol;
 use Illuminate\Foundation\Application;
@@ -23,6 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'permiso' => RequierePermiso::class,
         ]);
 
+        // Cierra la sesión si no se usa en X minutos (Configuración → Seguridad)
+        $middleware->web(append: [CierreSesionPorInactividad::class]);
+
         // Sin sesión, cualquier página protegida manda al inicio de sesión
         $middleware->redirectGuestsTo(fn () => route('login'));
 
@@ -43,5 +47,9 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Cuando un formulario regresa con errores, estas contraseñas NUNCA se guardan en la sesión
+        $exceptions->dontFlash([
+            'contrasena', 'contrasena_confirmation', 'contrasena_autoriza',
+            'contrasenaActual', 'contrasenaNueva', 'contrasenaNueva_confirmation', 'contrasenaConfirmar',
+        ]);
     })->create();

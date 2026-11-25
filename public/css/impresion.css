@@ -1,0 +1,54 @@
+/* Ticket de venta y cotización (layouts/impresion.blade.php) */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px 16px;
+  background: #F3F4F6;
+  color: #111827;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 13px;
+}
+
+.documento {
+  width: 100%;
+  max-width: var(--ancho-documento);
+  margin: 0 auto;
+  padding: 24px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+}
+
+.acciones { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.acciones button {
+  padding: 10px 22px; border: 0; border-radius: 8px;
+  background: #4F46E5; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.acciones .secundario { background: #FFFFFF; color: #111827; border: 1px solid #D1D5DB; }
+
+.centro { text-align: center; }
+.derecha { text-align: right; }
+.tenue { color: #6B7280; }
+.negrita { font-weight: 700; }
+.tienda { font-size: 18px; font-weight: 700; margin: 0; }
+.titulo-doc { font-size: 15px; font-weight: 700; margin: 12px 0 4px; letter-spacing: .04em; }
+.linea { border: 0; border-top: 1px dashed #9CA3AF; margin: 12px 0; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 11px; text-transform: uppercase; color: #6B7280; padding: 6px 4px; border-bottom: 1px solid #E5E7EB; }
+td { padding: 6px 4px; vertical-align: top; border-bottom: 1px solid #F3F4F6; }
+.totales td { border: 0; padding: 3px 4px; }
+.totales .total td { font-size: 16px; font-weight: 700; padding-top: 8px; }
+
+.sello {
+  display: inline-block; margin-top: 8px; padding: 4px 10px; border: 2px solid #DC2626;
+  color: #DC2626; font-weight: 700; letter-spacing: .08em;
+}
+
+@media print {
+  body { background: #FFFFFF; padding: 0; }
+  .no-imprimir { display: none !important; }
+  .documento { max-width: none; box-shadow: none; border-radius: 0; padding: 0; }
+  @page { margin: 10mm; }
+}

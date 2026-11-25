@@ -1,0 +1,50 @@
+/* Productos del administrador (Figma: "Administrador · Productos" y sus ventanas) */
+
+
+/* Vehículo compatible como "chip": Nissan Versa · 2012–2019  × */
+.chip-vehiculo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chip-quitar {
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--c-muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.chip-quitar:hover { color: var(--c-danger); }
+
+/* Caja punteada para la imagen del producto */
+.zona-imagen {
+  min-height: 150px;
+  padding: 16px;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.zona-imagen:hover,
+.zona-imagen.is-dragging {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+.zona-imagen.is-invalid { border-color: var(--c-danger); }
+
+.imagen-vista {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+}

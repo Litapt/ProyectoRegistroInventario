@@ -1,0 +1,32 @@
+/* Configuración (Figma Page 2) */
+
+.config-nav { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 4px; }
+.config-nav-link {
+  padding: 9px 12px; border-radius: 8px; color: var(--c-text, #374151);
+  text-decoration: none; font-size: 15px;
+}
+.config-nav-link:hover { background: #F3F4F6; color: var(--c-dark); }
+.config-nav-link.is-active { background: var(--c-primary-soft); color: var(--c-primary); font-weight: 600; }
+
+.config-seccion { scroll-margin-top: 16px; }
+.config-numero { color: var(--c-muted); font-size: 13px; }
+.config-pie { display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--c-border); }
+
+.config-logo {
+  width: 48px; height: 48px; border-radius: 10px; background: #F3F4F6; overflow: hidden; flex-shrink: 0;
+}
+.config-logo img { max-width: 32px; max-height: 32px; object-fit: contain; }
+
+.config-opcion {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; cursor: pointer;
+  border: 1px solid var(--c-border); border-radius: 8px; margin: 0;
+}
+.config-opcion:has(input:checked) { border-color: var(--c-primary); background: var(--c-primary-soft); }
+.config-opcion input { margin-top: 4px; accent-color: var(--c-primary); }
+
+#botonQuitarLogo:has(input:checked) { border-color: var(--c-danger); color: var(--c-danger); text-decoration: line-through; }
+
+@media (max-width: 991.98px) {
+  .config-nav { position: static; flex-direction: row; flex-wrap: wrap; }
+  .config-nav .sidebar-label, .config-nav .field-help { display: none; }
+}

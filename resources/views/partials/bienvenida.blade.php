@@ -2,7 +2,9 @@
     Bienvenida de cada rol mientras se programan sus módulos.
     @include('partials.bienvenida', ['subtitulo' => '...', 'pendientes' => ['...', '...']])
 --}}
-@php($trabajador = auth()->user())
+@php
+    $trabajador = auth()->user();
+@endphp
 
 <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
     <div>
