@@ -24,7 +24,7 @@
         ];
     @endphp
 
-    <a href="{{ route('administrador.productos.index') }}" class="btn-text d-inline-flex align-items-center gap-2 mb-3">
+    <a href="{{ \App\Support\Ruta::a('productos.index') }}" class="btn-text d-inline-flex align-items-center gap-2 mb-3">
         <img src="{{ asset('imagenes/icon-adjust-back.svg') }}" width="18" height="18" alt="">
         Volver a Productos
     </a>
@@ -36,7 +36,7 @@
 
     @include('partials.errores')
 
-    <form id="formAjuste" method="post" action="{{ route('administrador.productos.ajuste.store', $producto) }}" class="d-flex flex-column gap-4"
+    <form id="formAjuste" method="post" action="{{ \App\Support\Ruta::a('productos.ajuste.store', $producto) }}" class="d-flex flex-column gap-4"
           data-stock="{{ $producto->existencia }}" data-minimo="{{ $producto->stockMinimoEfectivo() }}"
           data-producto="{{ $producto->nombre }}" data-detalle="{{ $producto->codigoInterno }} · {{ $producto->marca?->nombre }}">
         @csrf
@@ -205,7 +205,7 @@
                 <p id="resumenTitulo" class="summary-title fw-semibold m-0"></p>
                 <p id="resumenTexto" class="summary-text m-0"></p>
             </div>
-            <a href="{{ route('administrador.productos.index') }}" class="btn-app btn-app-outline adjust-button d-flex align-items-center">Cancelar</a>
+            <a href="{{ \App\Support\Ruta::a('productos.index') }}" class="btn-app btn-app-outline adjust-button d-flex align-items-center">Cancelar</a>
             <button type="submit" id="botonConfirmar" class="btn-app btn-app-primary adjust-button d-flex align-items-center gap-2">
                 <img id="iconoEntrada" src="{{ asset('imagenes/icon-plus-sm.svg') }}" width="18" height="18" alt="">
                 <img id="iconoEgreso" src="{{ asset('imagenes/icon-minus-white.svg') }}" width="18" height="18" alt="">

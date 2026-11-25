@@ -7,8 +7,8 @@
      @if ($incidenciaReabierta)
          data-reabrir="{{ json_encode([
              'datos' => $incidenciaReabierta->datosIncidencia(),
-             'revision' => route('administrador.alertas.incidencias.revision', $incidenciaReabierta),
-             'resolver' => route('administrador.alertas.incidencias.resolver', $incidenciaReabierta),
+             'revision' => \App\Support\Ruta::a('alertas.incidencias.revision', $incidenciaReabierta),
+             'resolver' => \App\Support\Ruta::a('alertas.incidencias.resolver', $incidenciaReabierta),
          ]) }}"
      @endif>
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">

@@ -69,7 +69,7 @@
                             </td>
                             <td class="text-end">
                                 @if (auth()->user()->puede('inventario.ajustar'))
-                                    <a href="{{ route('administrador.productos.ajuste', $producto) }}" class="btn-app btn-app-outline btn-app-sm">Ajustar stock</a>
+                                    <a href="{{ \App\Support\Ruta::a('productos.ajuste', $producto) }}" class="btn-app btn-app-outline btn-app-sm">Ajustar stock</a>
                                 @endif
                             </td>
                         </tr>

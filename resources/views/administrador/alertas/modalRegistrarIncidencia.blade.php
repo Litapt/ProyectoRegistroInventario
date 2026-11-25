@@ -7,10 +7,10 @@
     $reabrirRegistro = $errors->registrar->any();
 @endphp
 <div class="modal fade modal-app" id="modalRegistrarIncidencia" tabindex="-1" aria-labelledby="registrarIncidenciaTitulo" aria-hidden="true"
-     data-buscar-productos="{{ route('administrador.ventas.buscarProductos') }}"
+     data-buscar-productos="{{ \App\Support\Ruta::a('ventas.buscarProductos') }}"
      data-reabrir="{{ $reabrirRegistro ? '1' : '' }}">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <form method="post" action="{{ route('administrador.alertas.incidencias.store') }}" class="modal-content" id="formRegistrarIncidencia" novalidate autocomplete="off">
+        <form method="post" action="{{ \App\Support\Ruta::a('alertas.incidencias.store') }}" class="modal-content" id="formRegistrarIncidencia" novalidate autocomplete="off">
             @csrf
             <input type="hidden" name="producto" id="regProducto" value="{{ old('producto') }}">
             <div class="modal-body d-flex flex-column gap-3">

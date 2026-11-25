@@ -304,7 +304,7 @@ class ConfiguracionController extends Controller
 
     private function listo(string $seccion, string $mensaje): RedirectResponse
     {
-        return redirect()->to(route('administrador.configuracion.index') . '#' . $seccion)
+        return redirect()->to(\App\Support\Ruta::a('configuracion.index') . '#' . $seccion)
             ->with('alerta', ['success', $mensaje])
             ->with('seccionGuardada', $seccion);
     }

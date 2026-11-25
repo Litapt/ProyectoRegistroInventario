@@ -101,7 +101,7 @@ class VentaController extends Controller
     /* Ventana "Cancelar venta" (con motivo y autorización) */
     public function cancelar(Request $request, Venta $venta): RedirectResponse
     {
-        $volver = fn () => redirect()->to(url()->previous(route('administrador.ventas.consultar')));
+        $volver = fn () => redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')));
 
         if ($venta->estaCancelada()) {
             return $volver()->with('alerta', ['warning', "La venta {$venta->folio} ya estaba cancelada."]);
@@ -179,7 +179,7 @@ class VentaController extends Controller
         $venta = RegistroVenta::registrarVenta($datos, $request->user());
 
         return redirect()
-            ->route('administrador.ventas.index')
+            ->to(\App\Support\Ruta::a('ventas.index'))
             ->with('alerta', ['success', "Venta {$venta->folio} registrada por " . Producto::formatoPrecio($venta->total) . '. El inventario ya se actualizó.'])
             ->with('ventaRegistrada', $venta->idVenta);
     }
@@ -217,7 +217,7 @@ class VentaController extends Controller
         $datos = RegistroVenta::validar($request, false);
         $cotizacion = RegistroVenta::guardarCotizacion($datos, $request->user());
 
-        return redirect()->route('administrador.ventas.cotizacion', $cotizacion);
+        return redirect()->to(\App\Support\Ruta::a('ventas.cotizacion', $cotizacion));
     }
 
     public function cotizacion(Pedido $pedido): View
@@ -269,7 +269,7 @@ class VentaController extends Controller
             ->all();
 
         return [
-            'url' => route('administrador.ventas.editar', $venta),
+            'url' => \App\Support\Ruta::a('ventas.editar', $venta),
             'datos' => $venta->datosParaEditar(
                 $pedidos ?: null,
                 old('cliente') ? (int) old('cliente') : null,

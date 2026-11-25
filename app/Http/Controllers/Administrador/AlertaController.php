@@ -96,7 +96,7 @@ class AlertaController extends Controller
         $incidencia = Incidencias::registrar((int) $datos['producto'], (int) $datos['tipo'], (int) $datos['cantidad'],
             $datos['prioridad'], trim($datos['descripcion']), $request->user());
 
-        return redirect()->route('administrador.alertas.incidencias')
+        return redirect()->to(\App\Support\Ruta::a('alertas.incidencias'))
             ->with('alerta', ['success', "Incidencia {$incidencia->folio} registrada."]);
     }
 
@@ -132,7 +132,7 @@ class AlertaController extends Controller
                 ->with('modalIncidencia', $incidencia->idSolicitud);
         }
 
-        return redirect()->route('administrador.alertas.incidencias')
+        return redirect()->to(\App\Support\Ruta::a('alertas.incidencias'))
             ->with('alerta', ['success', "La incidencia {$incidencia->folio} quedó resuelta."]);
     }
 

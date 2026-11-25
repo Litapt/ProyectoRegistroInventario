@@ -28,7 +28,7 @@ class SolicitudVentaController extends Controller
     */
     public function editar(Request $request, Venta $venta): RedirectResponse
     {
-        $volver = redirect()->to(url()->previous(route('administrador.ventas.consultar')));
+        $volver = redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')));
         $autorizarAhora = $request->input('accion') === 'autorizar';
 
         try {
@@ -95,11 +95,11 @@ class SolicitudVentaController extends Controller
         try {
             EdicionVenta::aprobar($solicitud, $request->user());
         } catch (ValidationException $e) {
-            return redirect()->route('administrador.ventas.solicitudes')
+            return redirect()->to(\App\Support\Ruta::a('ventas.solicitudes'))
                 ->with('alerta', ['danger', "No se pudo aplicar {$solicitud->folio}: " . collect($e->errors())->flatten()->first()]);
         }
 
-        return redirect()->route('administrador.ventas.solicitudes')
+        return redirect()->to(\App\Support\Ruta::a('ventas.solicitudes'))
             ->with('alerta', ['success', "Solicitud {$solicitud->folio} aceptada: la venta {$solicitud->venta?->folio} ya tiene los cambios."]);
     }
 
@@ -110,11 +110,11 @@ class SolicitudVentaController extends Controller
         try {
             EdicionVenta::rechazar($solicitud, $request->user(), $request->input('comentario'));
         } catch (ValidationException $e) {
-            return redirect()->route('administrador.ventas.solicitudes')
+            return redirect()->to(\App\Support\Ruta::a('ventas.solicitudes'))
                 ->with('alerta', ['warning', collect($e->errors())->flatten()->first()]);
         }
 
-        return redirect()->route('administrador.ventas.solicitudes')
+        return redirect()->to(\App\Support\Ruta::a('ventas.solicitudes'))
             ->with('alerta', ['success', "Solicitud {$solicitud->folio} rechazada: la venta no cambió."]);
     }
 }

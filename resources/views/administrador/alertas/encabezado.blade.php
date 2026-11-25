@@ -11,10 +11,10 @@
 </div>
 
 <nav class="tabs-app d-flex flex-wrap gap-4 mb-4" aria-label="Secciones de alertas">
-    <a href="{{ route('administrador.alertas.index') }}" class="tab-app {{ $activa === 'stock' ? 'is-active' : '' }}" @if ($activa === 'stock') aria-current="page" @endif>
+    <a href="{{ \App\Support\Ruta::a('alertas.index') }}" class="tab-app {{ $activa === 'stock' ? 'is-active' : '' }}" @if ($activa === 'stock') aria-current="page" @endif>
         Stock <span class="contador-gris">{{ $totalStock }}</span>
     </a>
-    <a href="{{ route('administrador.alertas.incidencias') }}" class="tab-app {{ $activa === 'incidencias' ? 'is-active' : '' }}" @if ($activa === 'incidencias') aria-current="page" @endif>
+    <a href="{{ \App\Support\Ruta::a('alertas.incidencias') }}" class="tab-app {{ $activa === 'incidencias' ? 'is-active' : '' }}" @if ($activa === 'incidencias') aria-current="page" @endif>
         Incidencias <span class="contador-gris">{{ $totalIncidencias }}</span>
     </a>
 </nav>

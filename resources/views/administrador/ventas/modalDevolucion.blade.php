@@ -11,7 +11,7 @@
 <div class="modal fade modal-app" id="modalDevolucion" tabindex="-1" aria-labelledby="devolucionTitulo" aria-hidden="true"
      @if ($reabrirDevolucion)
          data-reabrir="{{ json_encode([
-             'url' => route('administrador.ventas.devolucion', $ventaADevolver),
+             'url' => \App\Support\Ruta::a('ventas.devolucion', $ventaADevolver),
              'datos' => $ventaADevolver->datosParaDevolucion(),
              'producto' => old('producto'),
              'cantidad' => old('cantidad'),

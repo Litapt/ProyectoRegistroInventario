@@ -87,7 +87,7 @@ class ClienteController extends Controller
         }
 
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->with('alerta', ['success', "Cliente «{$cliente->nombre()}» registrado con el código {$cliente->codigo()}."]);
     }
 
@@ -123,7 +123,7 @@ class ClienteController extends Controller
         });
 
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->with('alerta', ['success', "Se guardaron los cambios de «{$cliente->nombre()}»."]);
     }
 
@@ -136,7 +136,7 @@ class ClienteController extends Controller
 
         $autorizo = $this->autorizar($request);
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.clientes.index')->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('clientes.index'))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($cliente, $autorizo) {
@@ -146,19 +146,19 @@ class ClienteController extends Controller
         });
 
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->with('alerta', ['success', "«{$cliente->nombre()}» se desactivó. Puedes reactivarlo en «Ver desactivados»."]);
     }
 
     public function reactivar(Request $request, Cliente $cliente): RedirectResponse
     {
         if ($cliente->activo) {
-            return redirect()->route('administrador.clientes.index');
+            return redirect()->to(\App\Support\Ruta::a('clientes.index'));
         }
 
         $autorizo = $this->autorizar($request);
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.clientes.index', ['ver' => 'desactivados'])->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('clientes.index', ['ver' => 'desactivados']))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($cliente, $autorizo) {
@@ -168,7 +168,7 @@ class ClienteController extends Controller
         });
 
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->with('alerta', ['success', "«{$cliente->nombre()}» está activo otra vez."]);
     }
 
@@ -230,7 +230,7 @@ class ClienteController extends Controller
     private function regresarConErrores(array $errores, string $modal, ?Cliente $cliente = null): RedirectResponse
     {
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->withErrors($errores)
             ->withInput(request()->except(['contrasena_autoriza']))
             ->with('modalCliente', $modal)
@@ -240,7 +240,7 @@ class ClienteController extends Controller
     private function noDisponible(): RedirectResponse
     {
         return redirect()
-            ->route('administrador.clientes.index')
+            ->to(\App\Support\Ruta::a('clientes.index'))
             ->with('alerta', ['warning', 'Ese cliente está desactivado. Reactívalo para poder modificarlo.']);
     }
 }

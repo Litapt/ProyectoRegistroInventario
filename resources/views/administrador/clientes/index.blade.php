@@ -27,7 +27,7 @@
     </div>
 
     <section class="panel">
-        <form method="get" action="{{ route('administrador.clientes.index') }}" class="panel-body d-flex flex-column gap-3">
+        <form method="get" action="{{ \App\Support\Ruta::a('clientes.index') }}" class="panel-body d-flex flex-column gap-3">
             @if ($verDesactivados)
                 <input type="hidden" name="ver" value="desactivados">
             @endif
@@ -44,14 +44,14 @@
                            class="form-control input-app filtro-buscar" placeholder="Nombre, teléfono, correo o RFC">
                     <button type="submit" class="btn-app btn-app-primary">Buscar</button>
                     @if ($buscar !== '')
-                        <a href="{{ route('administrador.clientes.index', $verDesactivados ? ['ver' => 'desactivados'] : []) }}" class="btn-text">Limpiar búsqueda</a>
+                        <a href="{{ \App\Support\Ruta::a('clientes.index', $verDesactivados ? ['ver' => 'desactivados'] : []) }}" class="btn-text">Limpiar búsqueda</a>
                     @endif
                     <span class="panel-text ms-auto">
                         {{ number_format($totalActivos) }} {{ $totalActivos === 1 ? 'cliente registrado' : 'clientes registrados' }} ·
                         @if ($verDesactivados)
-                            <a href="{{ route('administrador.clientes.index') }}" class="btn-text">Ver activos</a>
+                            <a href="{{ \App\Support\Ruta::a('clientes.index') }}" class="btn-text">Ver activos</a>
                         @else
-                            <a href="{{ route('administrador.clientes.index', ['ver' => 'desactivados']) }}" class="btn-text">Ver desactivados ({{ $totalDesactivados }})</a>
+                            <a href="{{ \App\Support\Ruta::a('clientes.index', ['ver' => 'desactivados']) }}" class="btn-text">Ver desactivados ({{ $totalDesactivados }})</a>
                         @endif
                     </span>
                 </div>
@@ -90,7 +90,7 @@
                                         @if ($puedeDesactivar)
                                             <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalAutorizacion"
-                                                    data-url="{{ route('administrador.clientes.reactivar', $cliente) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('clientes.reactivar', $cliente) }}"
                                                     data-titulo="Reactivar cliente" data-texto="Vas a reactivar los datos del cliente:"
                                                     data-nombre="{{ $cliente->nombre() }}" data-detalle="{{ $detalle }}"
                                                     data-boton="Confirmar reactivación" data-clase="btn-app-primary">
@@ -101,7 +101,7 @@
                                         @if ($puedeGestionar)
                                             <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalCliente" data-modo="editar"
-                                                    data-url="{{ route('administrador.clientes.update', $cliente) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('clientes.update', $cliente) }}"
                                                     data-cliente="{{ json_encode($cliente->datosParaEditar()) }}">
                                                 Editar
                                             </button>
@@ -109,7 +109,7 @@
                                         @if ($puedeDesactivar)
                                             <button type="button" class="btn-app btn-app-danger btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalAutorizacion"
-                                                    data-url="{{ route('administrador.clientes.desactivar', $cliente) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('clientes.desactivar', $cliente) }}"
                                                     data-titulo="Confirmar eliminación"
                                                     data-texto="Vas a eliminar los datos del cliente. Se desactiva: ya no aparecerá al registrar ventas, pero sus ventas anteriores se conservan y un gerente o administrador puede reactivarlo."
                                                     data-nombre="{{ $cliente->nombre() }}" data-detalle="{{ $detalle }}"

@@ -35,9 +35,9 @@
                 </p>
             </div>
             @if ($verResueltas)
-                <a href="{{ route('administrador.ventas.solicitudes') }}" class="btn-text">Ver pendientes ({{ $totalPendientes }})</a>
+                <a href="{{ \App\Support\Ruta::a('ventas.solicitudes') }}" class="btn-text">Ver pendientes ({{ $totalPendientes }})</a>
             @else
-                <a href="{{ route('administrador.ventas.solicitudes', ['ver' => 'resueltas']) }}" class="btn-text">Ver resueltas</a>
+                <a href="{{ \App\Support\Ruta::a('ventas.solicitudes', ['ver' => 'resueltas']) }}" class="btn-text">Ver resueltas</a>
             @endif
         </div>
 
@@ -104,7 +104,7 @@
                                     @if ($solicitud->estaPendiente())
                                         <button type="button" class="btn-app btn-app-primary btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalConfirmar"
-                                                data-confirmar-url="{{ route('administrador.ventas.solicitudes.aprobar', $solicitud) }}"
+                                                data-confirmar-url="{{ \App\Support\Ruta::a('ventas.solicitudes.aprobar', $solicitud) }}"
                                                 data-confirmar-metodo="PATCH"
                                                 data-confirmar-titulo="¿Aceptar {{ $solicitud->folio }}?"
                                                 data-confirmar-texto="La venta {{ $solicitud->venta?->folio }} y el inventario cambiarán como dice «Ver cambios»."
@@ -113,7 +113,7 @@
                                         </button>
                                         <button type="button" class="btn-app btn-app-danger btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalRechazar"
-                                                data-url="{{ route('administrador.ventas.solicitudes.rechazar', $solicitud) }}"
+                                                data-url="{{ \App\Support\Ruta::a('ventas.solicitudes.rechazar', $solicitud) }}"
                                                 data-folio="{{ $solicitud->folio }}">
                                             Rechazar
                                         </button>

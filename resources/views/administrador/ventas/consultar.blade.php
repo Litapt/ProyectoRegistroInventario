@@ -36,14 +36,14 @@
                     Reembolso {{ $dinero($devolucionRegistrada->reembolso()) }}
                 </div>
             </div>
-            <a href="{{ route('administrador.ventas.devolucion.comprobante', $devolucionRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
+            <a href="{{ \App\Support\Ruta::a('ventas.devolucion.comprobante', $devolucionRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
                 Imprimir comprobante
             </a>
         </div>
     @endif
 
     <section class="panel mb-4">
-        <form method="get" action="{{ route('administrador.ventas.consultar') }}" class="panel-body d-flex flex-column gap-3" id="filtrosVentas">
+        <form method="get" action="{{ \App\Support\Ruta::a('ventas.consultar') }}" class="panel-body d-flex flex-column gap-3" id="filtrosVentas">
             <div>
                 <h2 class="panel-title m-0">Consultar</h2>
                 <p class="panel-text m-0 mt-1">Puedes combinar los filtros para afinar tu consulta.</p>
@@ -86,7 +86,7 @@
                 <div class="col-12 d-flex flex-wrap align-items-end justify-content-end gap-3">
                     <button type="button" class="btn-text" id="filtroHoy">Sólo hoy</button>
                     @if ($hayFiltros)
-                        <a href="{{ route('administrador.ventas.consultar', $verCanceladas ? ['ver' => 'canceladas'] : []) }}" class="btn-app btn-app-soft">Limpiar filtros</a>
+                        <a href="{{ \App\Support\Ruta::a('ventas.consultar', $verCanceladas ? ['ver' => 'canceladas'] : []) }}" class="btn-app btn-app-soft">Limpiar filtros</a>
                     @endif
                     <button type="submit" class="btn-app btn-app-primary">Buscar ventas</button>
                 </div>
@@ -108,10 +108,10 @@
             </span>
             <span class="panel-text d-flex flex-wrap align-items-center gap-2">
                 @if ($verCanceladas)
-                    <a href="{{ route('administrador.ventas.consultar', $otrosFiltros) }}" class="btn-text">Ver completadas</a>
+                    <a href="{{ \App\Support\Ruta::a('ventas.consultar', $otrosFiltros) }}" class="btn-text">Ver completadas</a>
                 @else
                     Vendido: <strong class="text-dark">{{ $dinero($totalVendido) }}</strong> ·
-                    <a href="{{ route('administrador.ventas.consultar', $otrosFiltros + ['ver' => 'canceladas']) }}" class="btn-text">Ver canceladas ({{ $totalCanceladas }})</a>
+                    <a href="{{ \App\Support\Ruta::a('ventas.consultar', $otrosFiltros + ['ver' => 'canceladas']) }}" class="btn-text">Ver canceladas ({{ $totalCanceladas }})</a>
                 @endif
             </span>
         </div>
@@ -170,10 +170,10 @@
                                     <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                             data-bs-toggle="modal" data-bs-target="#modalDetalleVenta"
                                             data-venta="{{ json_encode($venta->datosParaDetalle()) }}"
-                                            data-ticket="{{ route('administrador.ventas.ticket', $venta) }}">
+                                            data-ticket="{{ \App\Support\Ruta::a('ventas.ticket', $venta) }}">
                                         Ver
                                     </button>
-                                    <a href="{{ route('administrador.ventas.ticket', $venta) }}" class="btn-app btn-app-outline btn-app-sm" data-imprimir>
+                                    <a href="{{ \App\Support\Ruta::a('ventas.ticket', $venta) }}" class="btn-app btn-app-outline btn-app-sm" data-imprimir>
                                         Ticket
                                     </a>
                                     @php
@@ -182,7 +182,7 @@
                                     @if ($paraDevolver && count($paraDevolver['renglones']) > 0)
                                         <button type="button" class="btn-app btn-app-soft btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalDevolucion"
-                                                data-url="{{ route('administrador.ventas.devolucion', $venta) }}"
+                                                data-url="{{ \App\Support\Ruta::a('ventas.devolucion', $venta) }}"
                                                 data-devolucion="{{ json_encode($paraDevolver) }}">
                                             Devolución
                                         </button>
@@ -190,7 +190,7 @@
                                     @if ($puedeEditar && !$venta->estaCancelada() && !$venta->solicitudPendiente && $venta->devoluciones->isEmpty())
                                         <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalEditarVenta"
-                                                data-url="{{ route('administrador.ventas.editar', $venta) }}"
+                                                data-url="{{ \App\Support\Ruta::a('ventas.editar', $venta) }}"
                                                 data-editar="{{ json_encode($venta->datosParaEditar()) }}">
                                             Editar
                                         </button>
@@ -198,7 +198,7 @@
                                     @if ($puedeCancelar && !$venta->estaCancelada())
                                         <button type="button" class="btn-app btn-app-danger btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalCancelarVenta"
-                                                data-url="{{ route('administrador.ventas.cancelar', $venta) }}"
+                                                data-url="{{ \App\Support\Ruta::a('ventas.cancelar', $venta) }}"
                                                 data-folio="{{ $venta->folio }}"
                                                 data-detalle="{{ $venta->nombreCliente() }} · {{ $dinero($venta->total) }} · {{ $venta->fechaVenta->format('d/m/Y h:i a') }}">
                                             Cancelar

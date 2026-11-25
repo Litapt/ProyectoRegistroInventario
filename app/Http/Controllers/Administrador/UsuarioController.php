@@ -97,14 +97,14 @@ class UsuarioController extends Controller
         });
 
         return redirect()
-            ->route('administrador.usuarios.index')
+            ->to(\App\Support\Ruta::a('usuarios.index'))
             ->with('alerta', ['success', "Usuario «{$usuario->nombreCompleto()}» registrado. Ya puede iniciar sesión con su correo."]);
     }
 
     public function update(Request $request, Trabajador $usuario): RedirectResponse
     {
         if (!$usuario->activo) {
-            return redirect()->route('administrador.usuarios.index', ['ver' => 'inactivos'])
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index', ['ver' => 'inactivos']))
                 ->with('alerta', ['warning', 'Ese usuario está inactivo. Reactívalo para poder editarlo.']);
         }
 
@@ -153,7 +153,7 @@ class UsuarioController extends Controller
         }
 
         return redirect()
-            ->route('administrador.usuarios.index')
+            ->to(\App\Support\Ruta::a('usuarios.index'))
             ->with('alerta', ['success', "Se guardaron los cambios de «{$usuario->nombreCompleto()}»."]);
     }
 
@@ -161,23 +161,23 @@ class UsuarioController extends Controller
     public function desactivar(Request $request, Trabajador $usuario): RedirectResponse
     {
         if (!$usuario->activo) {
-            return redirect()->route('administrador.usuarios.index')
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index'))
                 ->with('alerta', ['warning', 'Ese usuario ya está inactivo.']);
         }
 
         if ((int) $usuario->idTrabajador === (int) auth()->id()) {
-            return redirect()->route('administrador.usuarios.index')
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index'))
                 ->with('alerta', ['warning', 'No puedes eliminar tu propio usuario.']);
         }
 
         if ($this->dejariaSinAdministradores($usuario, (int) $usuario->fk_idRol, false)) {
-            return redirect()->route('administrador.usuarios.index')
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index'))
                 ->with('alerta', ['warning', 'Debe quedar al menos un administrador activo.']);
         }
 
         $autorizo = Autorizacion::verificar($request, 'correo_autoriza', 'contrasena_autoriza');
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.usuarios.index')->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index'))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($usuario, $autorizo) {
@@ -189,7 +189,7 @@ class UsuarioController extends Controller
         $this->cerrarSesiones($usuario);
 
         return redirect()
-            ->route('administrador.usuarios.index')
+            ->to(\App\Support\Ruta::a('usuarios.index'))
             ->with('alerta', ['success', "«{$usuario->nombreCompleto()}» quedó inactivo: ya no puede iniciar sesión. Lo puedes reactivar en «Ver inactivos»."]);
     }
 
@@ -197,12 +197,12 @@ class UsuarioController extends Controller
     public function reactivar(Request $request, Trabajador $usuario): RedirectResponse
     {
         if ($usuario->activo) {
-            return redirect()->route('administrador.usuarios.index');
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index'));
         }
 
         $autorizo = Autorizacion::verificar($request, 'correo_autoriza', 'contrasena_autoriza');
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.usuarios.index', ['ver' => 'inactivos'])->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('usuarios.index', ['ver' => 'inactivos']))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($usuario, $autorizo) {
@@ -212,7 +212,7 @@ class UsuarioController extends Controller
         });
 
         return redirect()
-            ->route('administrador.usuarios.index')
+            ->to(\App\Support\Ruta::a('usuarios.index'))
             ->with('alerta', ['success', "«{$usuario->nombreCompleto()}» está activo otra vez y ya puede iniciar sesión."]);
     }
 
@@ -296,7 +296,7 @@ class UsuarioController extends Controller
     private function regresarConErrores(array $errores, string $modal, ?Trabajador $usuario = null): RedirectResponse
     {
         return redirect()
-            ->route('administrador.usuarios.index')
+            ->to(\App\Support\Ruta::a('usuarios.index'))
             ->withErrors($errores)
             ->withInput(request()->except(['contrasena', 'contrasena_confirmation']))
             ->with('modalUsuario', $modal)

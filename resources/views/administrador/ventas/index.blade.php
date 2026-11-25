@@ -36,7 +36,7 @@
                 <div class="notice-text">{{ $ventaRegistrada->nombreCliente() }} · {{ $ventaRegistrada->fechaVenta->format('d/m/Y h:i a') }}</div>
             </div>
             {{-- Imprime directo, sin abrir otra pestaña (javascript/imprimir.js). El enlace es por si falla. --}}
-            <a href="{{ route('administrador.ventas.ticket', $ventaRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
+            <a href="{{ \App\Support\Ruta::a('ventas.ticket', $ventaRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
                 Imprimir ticket
             </a>
         </div>
@@ -46,10 +46,10 @@
         <div class="mb-4">@include('partials.errores')</div>
     @endif
 
-    <form method="post" action="{{ route('administrador.ventas.store') }}" id="formVenta" novalidate
-          data-buscar-clientes="{{ route('administrador.ventas.buscarClientes') }}"
-          data-buscar-productos="{{ route('administrador.ventas.buscarProductos') }}"
-          data-registrar-cliente="{{ $puedeRegistrarCliente ? route('administrador.clientes.store') : '' }}"
+    <form method="post" action="{{ \App\Support\Ruta::a('ventas.store') }}" id="formVenta" novalidate
+          data-buscar-clientes="{{ \App\Support\Ruta::a('ventas.buscarClientes') }}"
+          data-buscar-productos="{{ \App\Support\Ruta::a('ventas.buscarProductos') }}"
+          data-registrar-cliente="{{ $puedeRegistrarCliente ? \App\Support\Ruta::a('clientes.store') : '' }}"
           data-carrito="{{ json_encode($carritoAnterior) }}"
           data-cliente="{{ json_encode($clienteAnterior) }}"
           data-iva="{{ $iva }}"
@@ -187,12 +187,12 @@
                             <button type="submit" class="btn-app btn-app-primary w-100" id="botonRegistrar" disabled>Registrar venta</button>
                             <div class="d-flex flex-wrap gap-2">
                                 <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonMostrarCotizacion" disabled
-                                        formaction="{{ route('administrador.ventas.cotizacion.vista') }}" formtarget="_blank">
+                                        formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.vista') }}" formtarget="_blank">
                                     Mostrar cotización
                                 </button>
                                 @if ($puedeCotizar)
                                     <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonConvertirCotizacion" disabled
-                                            formaction="{{ route('administrador.ventas.cotizacion.store') }}">
+                                            formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.store') }}">
                                         Convertir a cotización
                                     </button>
                                 @endif

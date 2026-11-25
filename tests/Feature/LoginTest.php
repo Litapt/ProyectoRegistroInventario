@@ -30,7 +30,7 @@ test('la migración crea las 23 tablas y los catálogos', function () {
 
     expect(DB::table('roles')->count())->toBe(5)
         ->and(DB::table('permisos')->count())->toBe(17)
-        ->and(DB::table('rolPermisos')->count())->toBe(17)
+        ->and(DB::table('rolPermisos')->count())->toBe(32)   // 17 del administrador + 15 del gerente
         ->and(DB::table('motivos')->count())->toBe(26)   // 17 iniciales + 9 de devolución
         ->and(DB::table('folios')->count())->toBe(6)
         ->and(DB::table('configuraciones')->count())->toBe(16)

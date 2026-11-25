@@ -35,13 +35,13 @@
             </p>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-3">
-            <form method="get" action="{{ route('administrador.inicio') }}" id="formDia">
+            <form method="get" action="{{ \App\Support\Ruta::a('inicio') }}" id="formDia">
                 <label for="dia" class="visually-hidden">Día</label>
                 <input type="date" id="dia" name="dia" value="{{ $dia->format('Y-m-d') }}" max="{{ now()->format('Y-m-d') }}"
                        class="form-control input-app" onchange="this.form.submit()">
             </form>
             @if (auth()->user()->puede('ventas.registrar'))
-                <a href="{{ route('administrador.ventas.index') }}" class="btn-app btn-app-primary">Nueva venta</a>
+                <a href="{{ \App\Support\Ruta::a('ventas.index') }}" class="btn-app btn-app-primary">Nueva venta</a>
             @endif
         </div>
     </div>
@@ -144,8 +144,8 @@
                         <div class="fw-semibold text-dark">{{ $agotados }} {{ $agotados === 1 ? 'producto agotado' : 'productos agotados' }}</div>
                         <div class="small text-muted">Repón las piezas más solicitadas.</div>
                     </div>
-                    @if (\Illuminate\Support\Facades\Route::has('administrador.alertas.index') && auth()->user()->puede('solicitudes.autorizar'))
-                        <a href="{{ route('administrador.alertas.index') }}" class="btn-text mt-auto">Ver todas las alertas →</a>
+                    @if (\App\Support\Ruta::existe('alertas.index') && auth()->user()->puede('solicitudes.autorizar'))
+                        <a href="{{ \App\Support\Ruta::a('alertas.index') }}" class="btn-text mt-auto">Ver todas las alertas →</a>
                     @endif
                 </div>
             </section>
@@ -159,13 +159,13 @@
                 <h2 class="panel-title m-0">Productos por reponer</h2>
                 <p class="panel-text m-0 mt-1">Revisa existencias y mantén tu inventario al día.</p>
             </div>
-            <form method="get" action="{{ route('administrador.inicio') }}" class="d-flex align-items-center gap-3">
+            <form method="get" action="{{ \App\Support\Ruta::a('inicio') }}" class="d-flex align-items-center gap-3">
                 @if (!$esHoy)
                     <input type="hidden" name="dia" value="{{ $dia->format('Y-m-d') }}">
                 @endif
                 <input type="search" name="buscar" value="{{ $buscar }}" maxlength="60" class="form-control input-app" placeholder="Buscar producto o código" aria-label="Buscar producto o código">
                 @if (auth()->user()->puede('productos.consultar'))
-                    <a href="{{ route('administrador.productos.index') }}" class="btn-text text-nowrap">Ver productos</a>
+                    <a href="{{ \App\Support\Ruta::a('productos.index') }}" class="btn-text text-nowrap">Ver productos</a>
                 @endif
             </form>
         </div>
@@ -204,7 +204,7 @@
                             </td>
                             <td class="text-end">
                                 @if (auth()->user()->puede('inventario.ajustar'))
-                                    <a href="{{ route('administrador.productos.ajuste', $producto) }}" class="btn-app btn-app-outline btn-app-sm">Ajustar stock</a>
+                                    <a href="{{ \App\Support\Ruta::a('productos.ajuste', $producto) }}" class="btn-app btn-app-outline btn-app-sm">Ajustar stock</a>
                                 @endif
                             </td>
                         </tr>

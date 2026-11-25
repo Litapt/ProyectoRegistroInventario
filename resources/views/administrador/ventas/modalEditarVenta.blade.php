@@ -7,8 +7,8 @@
     (Venta::datosParaEditar()). Si el servidor regresa un error, se vuelve a abrir con lo escrito.
 --}}
 <div class="modal fade modal-app" id="modalEditarVenta" tabindex="-1" aria-labelledby="editarVentaTitulo" aria-hidden="true"
-     data-buscar-clientes="{{ route('administrador.ventas.buscarClientes') }}"
-     data-buscar-productos="{{ route('administrador.ventas.buscarProductos') }}"
+     data-buscar-clientes="{{ \App\Support\Ruta::a('ventas.buscarClientes') }}"
+     data-buscar-productos="{{ \App\Support\Ruta::a('ventas.buscarProductos') }}"
      data-icono-quitar="{{ asset('imagenes/icon-trash.svg') }}"
      @if ($edicionReabierta)
          data-reabrir="{{ json_encode($edicionReabierta) }}"
