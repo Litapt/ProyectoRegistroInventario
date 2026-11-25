@@ -1,0 +1,683 @@
+/*
+  Estilos de las pantallas con sesión iniciada (Figma Page 2), para todos los roles:
+  barra superior, menú lateral (administrador y gerente), tarjetas, tablas,
+  insignias y botones. Los colores son los del proyecto.
+*/
+:root {
+  --c-primary: #4F46E5;
+  --c-primary-dark: #4338CA;
+  --c-primary-soft: #EEF2FF;
+  --c-dark: #111827;
+  --c-text: #374151;
+  --c-muted: #6B7280;
+  --c-light: #9CA3AF;
+  --c-border: #E5E7EB;
+  --c-border-strong: #D1D5DB;
+  --c-bg: #F9FAFB;
+  --c-bg-soft: #F3F4F6;
+  --c-danger: #DC2626;
+  --c-danger-soft: #FEF2F2;
+  --c-warning: #B45309;
+  --c-warning-soft: #FFFBEB;
+  --c-success: #059669;
+  --c-success-soft: #ECFDF5;
+  --sidebar-width: 224px;
+  --topbar-height: 72px;
+}
+
+body.admin-body {
+  font-family: 'Inter', sans-serif;
+  color: var(--c-text);
+  background: #FFFFFF;
+}
+
+/* ---------- Íconos: un archivo SVG de imagenes/ pintado del color del texto ---------- */
+.icono {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  -webkit-mask: var(--icono) center / contain no-repeat;
+  mask: var(--icono) center / contain no-repeat;
+}
+
+.icono-sm { width: 16px; height: 16px; }
+.icono-lg { width: 22px; height: 22px; }
+
+/* ---------- Barra superior ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--topbar-height);
+  padding: 0 32px 0 24px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.topbar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--c-bg-soft);
+}
+
+.topbar-brand {
+  color: var(--c-dark);
+  font-size: 18px;
+}
+
+.topbar-help {
+  color: var(--c-text);
+  font-size: 14px;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--c-border);
+}
+
+.user-button {
+  padding: 4px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--c-muted);
+}
+
+.user-button:hover,
+.user-button:focus-visible {
+  background: var(--c-bg-soft);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.user-name {
+  color: var(--c-dark);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.user-role {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+/* Menú desplegable del usuario (Figma: "06 / Menú del administrador") */
+.user-menu {
+  min-width: 220px;
+  padding: 8px;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.12);
+}
+
+.user-menu .dropdown-header {
+  padding: 8px 12px 12px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.user-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--c-text);
+  font-size: 14px;
+}
+
+.user-menu .dropdown-item.text-danger {
+  color: var(--c-danger);
+}
+
+/* ---------- Menú lateral ---------- */
+.admin-shell {
+  min-height: calc(100vh - var(--topbar-height));
+}
+
+.sidebar {
+  position: sticky;
+  top: var(--topbar-height);
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--topbar-height));
+  padding: 24px 12px 16px;
+  border-right: 1px solid var(--c-border);
+  background: #FFFFFF;
+}
+
+.sidebar-label {
+  padding: 0 12px;
+  color: var(--c-muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-link {
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--c-text);
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.sidebar-link:hover {
+  background: var(--c-bg);
+  color: var(--c-dark);
+}
+
+.sidebar-link.is-active {
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+.sidebar-count {
+  min-width: 24px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sidebar-branch {
+  padding: 14px 12px;
+  border-radius: 10px;
+  background: var(--c-bg);
+  font-size: 13px;
+}
+
+.sidebar-branch-status {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-success);
+}
+
+.sidebar-footer {
+  color: var(--c-muted);
+  font-size: 11px;
+}
+
+/* ---------- Contenido ---------- */
+.admin-main {
+  min-width: 0;
+  padding: 32px 32px 48px;
+}
+
+.page-heading {
+  color: var(--c-dark);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.page-description {
+  color: var(--c-muted);
+  font-size: 15px;
+}
+
+/* Tarjeta blanca con borde (casi todo el contenido va en una) */
+.panel {
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+}
+
+.panel-body {
+  padding: 20px 24px;
+}
+
+.panel-title {
+  color: var(--c-dark);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.panel-text {
+  color: var(--c-muted);
+  font-size: 13px;
+}
+
+/* Tarjetas de números del tablero */
+.stat-label {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.stat-number {
+  color: var(--c-dark);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+}
+
+.stat-icon-warning {
+  background: var(--c-warning-soft);
+  color: var(--c-warning);
+}
+
+.stat-note {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+.trend-up { color: var(--c-success); font-weight: 600; }
+.trend-down { color: var(--c-danger); font-weight: 600; }
+.text-warning-strong { color: var(--c-warning); }
+
+/* Gráfica de barras de la semana */
+.week-chart {
+  height: 200px;
+  padding-left: 48px;
+  position: relative;
+}
+
+.week-chart-grid {
+  position: absolute;
+  inset: 0 0 28px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.week-chart-label {
+  position: absolute;
+  left: 0;
+  color: var(--c-light);
+  font-size: 11px;
+  transform: translateY(-50%);
+}
+
+.week-bar-column {
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+.week-bar {
+  width: 56%;
+  max-width: 44px;
+  min-height: 2px;
+  border-radius: 6px 6px 2px 2px;
+  background: #C7D2FE;
+}
+
+.week-bar.is-current {
+  background: var(--c-primary);
+}
+
+.week-day {
+  height: 28px;
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+.week-day.is-current {
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* Avisos de "Atención al inventario" */
+.notice {
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.notice-warning { background: var(--c-warning-soft); color: var(--c-warning); }
+.notice-danger { background: var(--c-danger-soft); color: var(--c-danger); }
+.notice-title { color: var(--c-dark); font-weight: 600; }
+.notice-text { color: var(--c-muted); }
+
+/* ---------- Tablas (Figma: "04 / Tabla de inventario") ---------- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table thead th {
+  padding: 12px 16px;
+  background: var(--c-bg);
+  color: var(--c-muted);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.data-table tbody td {
+  padding: 14px 16px;
+  border-top: 1px solid var(--c-border);
+  color: var(--c-text);
+  vertical-align: middle;
+}
+
+.data-table .cell-main {
+  color: var(--c-dark);
+  font-weight: 600;
+}
+
+.data-table .cell-sub {
+  color: var(--c-muted);
+  font-size: 12px;
+}
+
+.table-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--c-border);
+  color: var(--c-muted);
+  font-size: 13px;
+}
+
+/* ---------- Insignias de estado (Figma: "03 / Badges de estado") ---------- */
+.badge-estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-ok { background: var(--c-success-soft); color: var(--c-success); }
+.badge-warning { background: var(--c-warning-soft); color: var(--c-warning); }
+.badge-danger { background: var(--c-danger-soft); color: var(--c-danger); }
+.badge-primary { background: var(--c-primary-soft); color: var(--c-primary); }
+.badge-muted { background: var(--c-bg-soft); color: var(--c-muted); }
+
+/* ---------- Botones (Figma: "01 / Botones") ---------- */
+.btn-app {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-app-primary { background: var(--c-primary); color: #FFFFFF; }
+.btn-app-primary:hover { background: var(--c-primary-dark); color: #FFFFFF; }
+.btn-app-outline { border-color: var(--c-border-strong); background: #FFFFFF; color: var(--c-dark); }
+.btn-app-outline:hover { background: var(--c-bg); color: var(--c-dark); }
+.btn-app-danger { background: var(--c-danger); color: #FFFFFF; }
+.btn-app-danger:hover { background: #B91C1C; color: #FFFFFF; }
+.btn-app-sm { min-height: 34px; padding: 6px 14px; font-size: 13px; }
+.btn-app:disabled { opacity: 0.5; pointer-events: none; }
+
+.btn-text {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--c-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--c-muted);
+}
+
+.btn-icon:hover { background: var(--c-bg-soft); color: var(--c-dark); }
+.btn-icon-danger { color: var(--c-danger); }
+
+/* ---------- Campos (Figma: "02 / Campos de entrada") ---------- */
+.field-label-app {
+  margin-bottom: 8px;
+  color: var(--c-dark);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.input-app {
+  min-height: 44px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 8px;
+  color: var(--c-dark);
+  font-size: 14px;
+}
+
+.input-app:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.input-app.is-invalid {
+  border-color: var(--c-danger);
+}
+
+.input-search {
+  padding-left: 40px;
+  background: #FFFFFF url('../imagenes/icon-search-2.svg') 14px center / 16px no-repeat;
+}
+
+/* ---------- Pestañas (Ventas) ---------- */
+.tabs-app {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.tab-app {
+  padding: 12px 8px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.tab-app.is-active {
+  border-bottom-color: var(--c-primary);
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+/* ---------- Paginación ---------- */
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: var(--c-dark);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.page-btn.is-active {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: #FFFFFF;
+}
+
+.page-btn.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ---------- Registrar venta ---------- */
+.results-list {
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.result-item {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-top: 1px solid var(--c-border);
+  background: #FFFFFF;
+  text-align: left;
+}
+
+.result-item:first-child { border-top: 0; }
+.result-item:hover,
+.result-item.is-selected { background: var(--c-primary-soft); }
+
+.result-name { color: var(--c-dark); font-size: 14px; font-weight: 500; }
+.result-detail { color: var(--c-muted); font-size: 12px; }
+
+.qty-control {
+  border: 1px solid var(--c-border-strong);
+  border-radius: 8px;
+}
+
+.qty-control button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: none;
+  color: var(--c-primary);
+}
+
+.qty-control button:first-child { color: var(--c-muted); }
+
+.qty-control input {
+  width: 44px;
+  border: 0;
+  text-align: center;
+  color: var(--c-dark);
+  font-size: 14px;
+  -moz-appearance: textfield;
+}
+
+.qty-control input::-webkit-outer-spin-button,
+.qty-control input::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+
+.summary-line {
+  color: var(--c-text);
+  font-size: 14px;
+}
+
+.summary-total {
+  color: var(--c-dark);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* ---------- Ventana de confirmación (Figma: "05 / Modal de confirmación") ---------- */
+.modal-app .modal-content {
+  border: 0;
+  border-radius: 16px;
+  padding: 8px;
+}
+
+.modal-app-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+}
+
+.modal-app-title {
+  color: var(--c-dark);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ---------- Pantallas chicas: el menú lateral pasa arriba ---------- */
+@media (max-width: 991.98px) {
+  .admin-shell { flex-direction: column; }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .sidebar nav { flex-direction: row !important; flex-wrap: wrap; }
+  .sidebar-extra { display: none !important; }
+  .admin-main { padding: 24px 16px 40px; }
+  .topbar { padding: 0 16px; }
+}
+
+/* ---------- Pantallas sin menú lateral (cajero, vendedor, almacenista) ---------- */
+.rol-chip {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.contenido-rol {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 32px 48px;
+}
+
+.fecha-hoy {
+  color: var(--c-muted);
+  font-size: 15px;
+}
+
+/* Opciones del menú lateral que todavía no se programan */
+.sidebar-link.is-pending {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.sidebar-pronto {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--c-bg-soft);
+  color: var(--c-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Lista de lo que viene en cada pantalla de bienvenida */
+.lista-pronto {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--c-text);
+  font-size: 14px;
+}

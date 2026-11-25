@@ -59,3 +59,16 @@ body {
   pointer-events: none;
   z-index: 1000;
 }
+
+/* Botón de "Cerrar sesión": es un formulario (por seguridad) pero se ve como enlace */
+.header-link-button {
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+/* Nombre del usuario que inició sesión */
+.header-user {
+  color: var(--color-dark);
+  font-size: 14px;
+}

@@ -1,0 +1,9 @@
+ETAPA 00 · Proyecto base (SÓLO si tu repositorio todavía no tiene el proyecto de Laravel)
+=======================================================================================
+Qué trae: el proyecto Laravel desde cero (inicio de sesión, tablas de la refaccionaria,
+pantallas de bienvenida de cada rol) y los archivos de Laravel que se repararon.
+
+Si tu git YA tiene esto (el login y las tablas), sáltate esta etapa.
+
+Mensaje para el commit:
+    Proyecto base: Laravel, inicio de sesión y tablas de la refaccionaria

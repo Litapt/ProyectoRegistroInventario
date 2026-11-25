@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="user" clip-path="url(#clip0_0_4)">
+<path id="Tuerca" d="M7.9452 0H15.834L19.7784 9.8184L15.834 19.6368H7.9452L4.0008 9.8184L7.9452 0ZM15.2029 9.8184C15.2029 12.0959 13.7195 13.9421 11.8896 13.9421C10.0597 13.9421 8.5763 12.0959 8.5763 9.8184C8.5763 7.54092 10.0597 5.69467 11.8896 5.69467C13.7195 5.69467 15.2029 7.54092 15.2029 9.8184Z" stroke-width="2" stroke-linecap="round" stroke="#4F46E5"/>
+</g>
+<defs>
+<clipPath id="clip0_0_4">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg>
