@@ -187,6 +187,15 @@
                                    value="{{ old('iva', $v('iva', '16')) }}"
                                    class="form-control input-app @error('iva', 'ventas') is-invalid @enderror">
                             <p class="field-help m-0 mt-1">Para productos sin IVA propio. Las ventas que ya existen no cambian.</p>
+
+                            <label for="cfgFondoCaja" class="field-label-app mt-3">Fondo inicial de caja</label>
+                            <div class="input-group">
+                                <span class="input-group-text input-prefix">$</span>
+                                <input type="number" id="cfgFondoCaja" name="fondoCaja" min="0" max="999999" step="0.01"
+                                       value="{{ old('fondoCaja', $v('fondoInicialCaja', '1000')) }}"
+                                       class="form-control input-app @error('fondoCaja', 'ventas') is-invalid @enderror">
+                            </div>
+                            <p class="field-help m-0 mt-1">Con cuánto abre el cajero su turno. Si cuenta otra cantidad, lo autoriza un gerente o administrador.</p>
                         </div>
                         <div class="col-md-6">
                             <span class="field-label-app d-block">Formato de folio</span>

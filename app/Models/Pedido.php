@@ -16,7 +16,8 @@ class Pedido extends Model
     public const COTIZACION = 'COTIZACION';
 
     public const PENDIENTE = 'PENDIENTE';
-    public const CONVERTIDA = 'CONVERTIDA';   // cotización que ya se cobró como venta (fk_idVenta)
+    public const CONVERTIDA = 'CONVERTIDA';   // ya se cobró como venta (fk_idVenta)
+    public const CANCELADO = 'CANCELADO';     // pedido que se canceló antes de cobrarlo (motivo en observaciones)
 
     // Días que vale una cotización
     public const DIAS_VIGENCIA = 15;
@@ -72,6 +73,40 @@ class Pedido extends Model
     public function porcentajeDescuento(): float
     {
         return (float) $this->subtotal > 0 ? round((float) $this->descuentoTotal / (float) $this->subtotal * 100, 2) : 0.0;
+    }
+
+    public function nombreCliente(): string
+    {
+        return $this->cliente?->nombre() ?? 'Público en general';
+    }
+
+    public function piezas(): int
+    {
+        return (int) ($this->relationLoaded('detalles') ? $this->detalles->sum('cantidad') : $this->detalles()->sum('cantidad'));
+    }
+
+    /* Con qué datos se ve en la ventana "Ver detalles del pedido" */
+    public function datosParaDetalle(): array
+    {
+        return [
+            'folio' => $this->folio,
+            'fecha' => $this->fechaPedido?->format('d/m/Y h:i a'),
+            'cliente' => $this->nombreCliente(),
+            'codigoCliente' => $this->cliente?->codigo(),
+            'telefono' => $this->cliente?->telefono,
+            'trabajador' => $this->trabajador?->nombreCompleto(),
+            'productos' => $this->detalles->map(fn ($d) => [
+                'codigo' => $d->producto?->codigoInterno,
+                'nombre' => $d->producto?->nombre,
+                'cantidad' => $d->cantidad,
+                'precio' => Producto::formatoPrecio($d->precioUnitario),
+                'subtotal' => Producto::formatoPrecio($d->subtotal),
+            ])->values()->all(),
+            'subtotal' => Producto::formatoPrecio($this->subtotal),
+            'descuento' => (float) $this->descuentoTotal > 0 ? '−' . Producto::formatoPrecio($this->descuentoTotal) : null,
+            'iva' => Producto::formatoPrecio($this->impuestosTotal),
+            'total' => Producto::formatoPrecio($this->total),
+        ];
     }
 
     public function cliente(): BelongsTo

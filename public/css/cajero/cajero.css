@@ -1,0 +1,62 @@
+/* Cajero: abrir turno, detalles del pedido y cobrar. */
+
+.volver-enlace {
+  display: inline-flex;
+  color: var(--c-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.volver-enlace:hover { text-decoration: underline; }
+
+.badge-folio {
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.resumen-detalle { min-width: 240px; }
+
+/* ---------- Conteo de billetes ---------- */
+.conteo-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conteo-renglon {
+  display: grid;
+  grid-template-columns: 1fr 110px 100px;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.conteo-nombre { color: var(--c-dark); font-weight: 500; }
+
+.conteo-importe {
+  color: var(--c-primary);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .conteo-renglon { grid-template-columns: 1fr 84px; }
+  .conteo-importe { grid-column: 1 / -1; text-align: left; margin-top: -6px; font-size: 13px; }
+}
+
+/* ---------- Cobrar ---------- */
+.cambio-caja {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--c-bg-soft);
+  color: var(--c-dark);
+  font-size: 22px;
+  font-weight: 700;
+}

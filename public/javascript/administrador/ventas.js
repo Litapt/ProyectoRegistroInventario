@@ -1,5 +1,6 @@
-// Ventas · Registrar venta.
+// Ventas · Registrar venta (administrador y gerente) y Registrar pedido (cajero).
 // Maneja el cliente elegido, la lista de productos y las cuentas que se ven en pantalla.
+// En la pantalla del cajero no hay descuento ni forma de pago: esas partes se saltan si no existen.
 // IMPORTANTE: las cuentas son las mismas que App\Support\CalculoVenta (PHP). El servidor
 // vuelve a calcular todo al guardar; si no coincide con lo que se vio aquí, avisa.
 (function () {
@@ -132,12 +133,15 @@
     $('conteoProductos').textContent = texto;
     $('resumenConteo').textContent = productos === 0 ? '0 productos · 0 piezas' : texto;
     $('resumenSubtotal').textContent = dinero(c.subtotal);
-    $('resumenDescuento').textContent = '−' + dinero(c.descuento);
-    $('resumenPorcentaje').textContent = estado.descuento > 0 ? '(' + estado.descuento + ' %)' : '';
+    if ($('resumenDescuento')) {
+      $('resumenDescuento').textContent = '−' + dinero(c.descuento);
+      $('resumenPorcentaje').textContent = estado.descuento > 0 ? '(' + estado.descuento + ' %)' : '';
+    }
     $('resumenIva').textContent = dinero(c.iva);
     $('resumenTotal').textContent = dinero(c.total);
 
     pintarPago(c.total);
+    avisarCuentas(c.total);
 
     const vacio = productos === 0;
     $('botonRegistrar').disabled = vacio;
@@ -161,6 +165,7 @@
   }
 
   function pintarPago(totalCentavos) {
+    if (!$('opcionCredito')) { return; }
     if (totalCentavos === undefined) { totalCentavos = calcular().total; }
     const hayCliente = !!estado.cliente;
     const credito = $('opcionCredito').querySelector('input');
@@ -189,11 +194,24 @@
     }
   }
 
+  // Avisa el total, el descuento y lo que se paga ahora (la pantalla del cajero lo usa para el cambio
+  // y para saber si necesita autorización). Evento: "venta:cuentas".
+  function avisarCuentas(totalCentavos) {
+    if (totalCentavos === undefined) { totalCentavos = calcular().total; }
+    const credito = esCredito();
+    const parte = credito && $('pagoInicial') ? pagoInicialValido(totalCentavos) : null;
+    form.dispatchEvent(new CustomEvent('venta:cuentas', {
+      detail: { total: totalCentavos, descuento: estado.descuento, credito: credito, pagaAhora: credito ? (parte === null ? 0 : parte) : totalCentavos }
+    }));
+  }
+
   form.querySelectorAll('input[name=condicionPago]').forEach(function (r) {
-    r.addEventListener('change', function () { pintarPago(); if (esCredito()) { $('pagoInicial').focus(); } });
+    r.addEventListener('change', function () { pintarPago(); avisarCuentas(); if (esCredito()) { $('pagoInicial').focus(); } });
   });
-  $('pagoInicial').addEventListener('input', function () { pintarPago(); });
-  $('pagoInicial').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); } });
+  if ($('pagoInicial')) {
+    $('pagoInicial').addEventListener('input', function () { pintarPago(); avisarCuentas(); });
+    $('pagoInicial').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); } });
+  }
 
   function pintarCliente() {
     const hay = !!estado.cliente;
@@ -382,10 +400,12 @@
     }
   }
 
-  $('aplicarDescuento').addEventListener('click', aplicarDescuento);
-  $('descuento').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); aplicarDescuento(); }
-  });
+  if ($('descuento')) {
+    $('aplicarDescuento').addEventListener('click', aplicarDescuento);
+    $('descuento').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); aplicarDescuento(); }
+    });
+  }
 
   // ---------- Enviar ----------
 
@@ -404,7 +424,7 @@
     }
 
     // Si escribió un descuento pero no le dio "Aplicar", se aplica ahora para que lo vea
-    if ($('descuento').value.trim() !== String(estado.descuento === 0 ? '' : estado.descuento)) {
+    if ($('descuento') && $('descuento').value.trim() !== String(estado.descuento === 0 ? '' : estado.descuento)) {
       aplicarDescuento();
       if ($('descuento').classList.contains('is-invalid')) {
         e.preventDefault();
@@ -509,7 +529,7 @@
 
   // ---------- Al cargar ----------
 
-  const descuentoAnterior = $('descuento').value.trim();
+  const descuentoAnterior = $('descuento') ? $('descuento').value.trim() : '';
   if (descuentoAnterior !== '') { aplicarDescuento(); }
   pintarCliente();
   pintarCarrito();

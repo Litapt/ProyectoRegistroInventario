@@ -39,6 +39,7 @@ class RegistroVenta
         'totalEsperado' => 'total',
         'condicion' => 'forma de pago',
         'pagoInicial' => 'lo que paga ahora',
+        'recibido' => 'monto recibido',
     ];
 
     /* Revisa el formulario y regresa [cliente, renglones pedidos, % descuento, datos] */
@@ -58,7 +59,12 @@ class RegistroVenta
             'condicion' => ['nullable', Rule::in([Venta::CONTADO, Venta::CREDITO])],
             'pagoInicial' => ['nullable', 'numeric', 'min:0', 'decimal:0,2'],
             'cotizacion' => ['nullable', 'integer'],
+            // Caja: con cuánto pagó el cliente en efectivo (para el cambio)
+            'recibido' => ['nullable', 'numeric', 'min:0', 'max:9999999', 'decimal:0,2'],
         ], MensajesValidacion::MENSAJES + [
+            'recibido.numeric' => 'Escribe con cuánto paga el cliente.',
+            'recibido.min' => 'Lo recibido no puede ser negativo.',
+            'recibido.decimal' => 'Lo recibido puede tener hasta 2 decimales.',
             'pagoInicial.min' => 'Lo que paga ahora no puede ser negativo.',
             'pagoInicial.decimal' => 'Lo que paga ahora puede tener hasta 2 decimales.',
             'productos.required' => 'Agrega al menos un producto.',
@@ -83,6 +89,7 @@ class RegistroVenta
             'condicion' => ($datos['condicion'] ?? null) === Venta::CREDITO ? Venta::CREDITO : Venta::CONTADO,
             'pagoInicial' => isset($datos['pagoInicial']) ? round((float) $datos['pagoInicial'], 2) : 0.0,
             'cotizacion' => isset($datos['cotizacion']) ? (int) $datos['cotizacion'] : null,
+            'recibido' => isset($datos['recibido']) ? round((float) $datos['recibido'], 2) : null,
         ];
     }
 
@@ -93,6 +100,17 @@ class RegistroVenta
     public static function registrarVenta(array $datos, Trabajador $quien): Venta
     {
         return DB::transaction(function () use ($datos, $quien) {
+            // Cobrar un PEDIDO: se bloquea para que dos cajas no lo cobren al mismo tiempo
+            $pedido = null;
+            if (!empty($datos['pedido'])) {
+                $pedido = Pedido::whereKey($datos['pedido'])->where('tipoPedido', Pedido::PEDIDO)->lockForUpdate()->first();
+                if (!$pedido || $pedido->estadoPedido !== Pedido::PENDIENTE) {
+                    throw ValidationException::withMessages(['pedido' => $pedido
+                        ? "El pedido {$pedido->folio} ya " . ($pedido->estadoPedido === Pedido::CONVERTIDA ? 'se cobró.' : 'se canceló.')
+                        : 'Ese pedido no existe.']);
+                }
+            }
+
             // Productos BLOQUEADOS (en orden de id para que dos cajas no se atoren entre sí)
             $productos = Producto::whereKey(array_keys($datos['pedidos']))
                 ->orderBy('idProducto')->lockForUpdate()->get()->keyBy('idProducto');
@@ -157,14 +175,33 @@ class RegistroVenta
                 ]);
             }
 
+            // Caja: si pagó en efectivo, lo recibido alcanza y se guarda el cambio
+            $recibido = $datos['recibido'] ?? null;
+            if ($recibido !== null && $recibido - $pagoAhora <= -0.005) {
+                throw ValidationException::withMessages(['recibido' => 'Lo recibido (' . Producto::formatoPrecio($recibido)
+                    . ') no alcanza: tiene que pagar ' . Producto::formatoPrecio($pagoAhora) . '.']);
+            }
+
             if ($pagoAhora > 0) {
+                $notas = array_filter([
+                    $credito ? 'Pago inicial (anticipo)' : null,
+                    $recibido !== null ? 'Recibido ' . Producto::formatoPrecio($recibido) . ' · Cambio ' . Producto::formatoPrecio($recibido - $pagoAhora) : null,
+                ]);
                 PagoVenta::create([
                     'fk_idVenta' => $venta->idVenta,
+                    'fk_idPedido' => $pedido?->idPedido,
                     'fk_idMetodoPago' => $datos['metodoPago'],
                     'monto' => $pagoAhora,
                     'fk_idTrabajador' => $quien->idTrabajador,
-                    'observaciones' => $credito ? 'Pago inicial (anticipo)' : null,
+                    'referencia' => $datos['turno'] ?? null,
+                    'observaciones' => $notas ? implode(' · ', $notas) : null,
                 ]);
+            }
+
+            if ($pedido) {
+                $pedido->estadoPedido = Pedido::CONVERTIDA;
+                $pedido->fk_idVenta = $venta->idVenta;
+                $pedido->save();
             }
 
             // Si venía de una cotización, queda marcada como cobrada
@@ -181,7 +218,8 @@ class RegistroVenta
                 'condicion' => $credito ? Venta::CREDITO : Venta::CONTADO,
                 'pagoAhora' => $pagoAhora,
                 'productos' => count($cuentas['renglones']),
-            ]);
+                'pedido' => $pedido?->folio,
+            ], $datos['autorizo'] ?? null);   // cajero: quién autorizó el descuento o el saldo pendiente
 
             return $venta;
         });
@@ -288,27 +326,59 @@ class RegistroVenta
     /* Guarda la cotización (NO toca el inventario) */
     public static function guardarCotizacion(array $datos, Trabajador $quien): Pedido
     {
-        return DB::transaction(function () use ($datos, $quien) {
+        return self::guardarPedidoDe(Pedido::COTIZACION, $datos, $quien);
+    }
+
+    /*
+        Guarda un PEDIDO para cobrarlo en caja. Tampoco toca el inventario: las piezas
+        se descuentan cuando el cajero lo cobra (ahí se vuelve a revisar que haya).
+        Con $pedido, en lugar de uno nuevo, se reemplaza lo de ese pedido (editar antes de cobrar).
+    */
+    public static function guardarPedido(array $datos, Trabajador $quien, ?Pedido $pedido = null): Pedido
+    {
+        return self::guardarPedidoDe(Pedido::PEDIDO, $datos, $quien, $pedido);
+    }
+
+    private static function guardarPedidoDe(string $tipo, array $datos, Trabajador $quien, ?Pedido $existente = null): Pedido
+    {
+        return DB::transaction(function () use ($tipo, $datos, $quien, $existente) {
+            if ($existente) {
+                $existente = Pedido::whereKey($existente->idPedido)->lockForUpdate()->firstOrFail();
+                if ($existente->estadoPedido !== Pedido::PENDIENTE) {
+                    throw ValidationException::withMessages(['pedido' => "El pedido {$existente->folio} ya no se puede editar: "
+                        . ($existente->estadoPedido === Pedido::CONVERTIDA ? 'ya se cobró.' : 'se canceló.')]);
+                }
+            }
+
             $productos = Producto::whereKey(array_keys($datos['pedidos']))->get()->keyBy('idProducto');
             $cuentas = CalculoVenta::calcular(self::renglones($datos['pedidos'], $productos, false), $datos['descuento']);
             self::revisarTotal($datos, $cuentas);
 
-            $cotizacion = Pedido::create([
-                'folio' => Folios::siguiente('COTIZACION'),
-                'tipoPedido' => Pedido::COTIZACION,
+            $campos = [
                 'fk_idCliente' => $datos['cliente'],
-                'fk_idTrabajador' => $quien->idTrabajador,
-                'vigencia' => now()->addDays(Pedido::DIAS_VIGENCIA)->toDateString(),
-                'estadoPedido' => Pedido::PENDIENTE,
                 'subtotal' => $cuentas['subtotal'],
                 'descuentoTotal' => $cuentas['descuento'],
                 'impuestosTotal' => $cuentas['iva'],
                 'total' => $cuentas['total'],
-            ]);
+            ];
+
+            if ($existente) {
+                $pedido = $existente;
+                $pedido->fill($campos)->save();
+                $pedido->detalles()->delete();
+            } else {
+                $pedido = Pedido::create($campos + [
+                    'folio' => Folios::siguiente($tipo),
+                    'tipoPedido' => $tipo,
+                    'fk_idTrabajador' => $quien->idTrabajador,
+                    'vigencia' => $tipo === Pedido::COTIZACION ? now()->addDays(Pedido::DIAS_VIGENCIA)->toDateString() : null,
+                    'estadoPedido' => Pedido::PENDIENTE,
+                ]);
+            }
 
             foreach ($cuentas['renglones'] as $r) {
                 DetallePedido::create([
-                    'fk_idPedido' => $cotizacion->idPedido,
+                    'fk_idPedido' => $pedido->idPedido,
                     'fk_idProducto' => $r['producto']->idProducto,
                     'cantidad' => $r['cantidad'],
                     'precioUnitario' => $r['precio'],
@@ -319,12 +389,41 @@ class RegistroVenta
                 ]);
             }
 
-            Bitacora::registrar('CREAR', 'pedidos', $cotizacion->idPedido, [
-                'folio' => $cotizacion->folio, 'tipo' => Pedido::COTIZACION, 'total' => $cuentas['total'],
+            Bitacora::registrar($existente ? 'EDITAR' : 'CREAR', 'pedidos', $pedido->idPedido, [
+                'folio' => $pedido->folio, 'tipo' => $tipo, 'total' => $cuentas['total'],
             ]);
 
-            return $cotizacion;
+            return $pedido;
         });
+    }
+
+    /* Cancela un pedido que no se ha cobrado (no movió inventario ni dinero: no pide autorización) */
+    public static function cancelarPedido(Pedido $pedido, string $motivo, ?string $comentario, Trabajador $quien): Pedido
+    {
+        return DB::transaction(function () use ($pedido, $motivo, $comentario, $quien) {
+            $pedido = Pedido::whereKey($pedido->idPedido)->where('tipoPedido', Pedido::PEDIDO)->lockForUpdate()->firstOrFail();
+            if ($pedido->estadoPedido !== Pedido::PENDIENTE) {
+                throw ValidationException::withMessages(['cancelar' => "El pedido {$pedido->folio} ya "
+                    . ($pedido->estadoPedido === Pedido::CONVERTIDA ? 'se cobró: ya no se puede cancelar aquí.' : 'estaba cancelado.')]);
+            }
+
+            $comentario = $comentario !== null && trim($comentario) !== '' ? trim($comentario) : null;
+            $pedido->estadoPedido = Pedido::CANCELADO;
+            $pedido->observaciones = mb_substr($motivo . ($comentario ? ' · ' . $comentario : ''), 0, 500);
+            $pedido->save();
+
+            Bitacora::registrar('CANCELAR', 'pedidos', $pedido->idPedido, [
+                'folio' => $pedido->folio, 'motivo' => $motivo, 'comentario' => $comentario, 'cancelo' => $quien->idTrabajador,
+            ]);
+
+            return $pedido;
+        });
+    }
+
+    /* Lo que la pantalla de Registrar necesita para volver a armar un pedido guardado */
+    public static function carritoDePedido(Pedido $pedido): array
+    {
+        return self::carritoDesde($pedido->detalles->map(fn ($d) => ['id' => $d->fk_idProducto, 'cantidad' => $d->cantidad])->all());
     }
 
     /* Las cuentas sin guardar nada (para "Mostrar cotización") */

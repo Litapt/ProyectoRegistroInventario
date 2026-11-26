@@ -11,7 +11,10 @@ use App\Http\Controllers\Administrador\SolicitudVentaController;
 use App\Http\Controllers\Administrador\UsuarioController;
 use App\Http\Controllers\Administrador\VentaController;
 use App\Http\Controllers\Almacenista\InicioController as InicioAlmacenista;
+use App\Http\Controllers\Cajero\ClienteController as ClienteCajero;
 use App\Http\Controllers\Cajero\InicioController as InicioCajero;
+use App\Http\Controllers\Cajero\PedidoController as PedidoCajero;
+use App\Http\Controllers\Cajero\TurnoController as TurnoCajero;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Perfil\PerfilController;
 use App\Http\Controllers\Vendedor\InicioController as InicioVendedor;
@@ -85,13 +88,10 @@ $pantallasConMenuLateral = function () {
     });
     Route::get('/ventas/consultar', [VentaController::class, 'consultar'])
         ->middleware('permiso:ventas.consultar')->name('ventas.consultar');
-<<<<<<< HEAD
     Route::post('/ventas/{venta}/abono', [VentaController::class, 'abonar'])
         ->middleware('permiso:pagos.registrar')->name('ventas.abono');
     Route::get('/ventas/cotizaciones', [VentaController::class, 'cotizaciones'])
         ->middleware('permiso:pedidos.gestionar')->name('ventas.cotizaciones');
-=======
->>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
     Route::patch('/ventas/{venta}/cancelar', [VentaController::class, 'cancelar'])
         ->middleware('permiso:ventas.cancelar')->name('ventas.cancelar');
     // Devoluciones (regresan dinero: piden autorización y el permiso de cancelar ventas)
@@ -169,10 +169,37 @@ Route::middleware('rol:' . Trabajador::ROL_GERENTE)
     ->group($pantallasConMenuLateral);
 
 // ---------- Cajero ----------
+/*
+    Pantallas con barra superior (sin menú lateral). Para vender o cobrar pedidos
+    primero abre su turno de caja (middleware "turno"). Sólo hace pagos directos:
+    descuentos, saldo pendiente y cancelaciones los autoriza un gerente o administrador.
+*/
 Route::middleware('rol:' . Trabajador::ROL_CAJERO)
     ->prefix('cajero')->name('cajero.')
     ->group(function () {
+        // Nueva venta (su pantalla principal; ahí aparece "Abrir turno" si no lo ha abierto)
         Route::get('/', [InicioCajero::class, 'index'])->name('inicio');
+        Route::post('/turno', [TurnoCajero::class, 'abrir'])->name('turno.abrir');
+
+        Route::middleware('turno')->group(function () {
+            Route::post('/ventas', [InicioCajero::class, 'store'])->name('ventas.store');
+
+            // Pedidos que arman los vendedores: ver, editar antes de cobrar, cobrar o cancelar
+            Route::get('/pedidos', [PedidoCajero::class, 'index'])->name('pedidos.index');
+            Route::get('/pedidos/{pedido}/editar', [PedidoCajero::class, 'edit'])->name('pedidos.edit');
+            Route::put('/pedidos/{pedido}', [PedidoCajero::class, 'update'])->name('pedidos.update');
+            Route::get('/pedidos/{pedido}/cobrar', [PedidoCajero::class, 'cobrar'])->name('pedidos.cobrar');
+            Route::post('/pedidos/{pedido}/cobrar', [PedidoCajero::class, 'pagar'])->name('pedidos.pagar');
+            Route::patch('/pedidos/{pedido}/cancelar', [PedidoCajero::class, 'cancelar'])->name('pedidos.cancelar');
+
+            Route::get('/buscar-clientes', [PedidoCajero::class, 'buscarClientes'])->name('buscarClientes');
+            Route::get('/buscar-productos', [PedidoCajero::class, 'buscarProductos'])->name('buscarProductos');
+            Route::post('/clientes', [ClienteCajero::class, 'store'])->name('clientes.store');
+        });
+
+        // Reimprimir (no necesitan turno abierto)
+        Route::get('/ventas/{venta}/ticket', [PedidoCajero::class, 'ticket'])->name('ventas.ticket');
+        Route::get('/pedidos/{pedido}/cancelacion', [PedidoCajero::class, 'comprobanteCancelacion'])->name('pedidos.cancelacion');
     });
 
 // ---------- Vendedor ----------

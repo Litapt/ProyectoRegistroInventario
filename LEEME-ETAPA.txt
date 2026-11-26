@@ -1,12 +1,14 @@
-ETAPA 03 · Cotizaciones y crédito
-=================================
-Qué trae (partes 10b, 10c y 10d):
-  - Convertir a cotización sin cambiar de página
-  - Pestaña "Cotizaciones" (imprimir y cobrar las guardadas)
-  - Pagar una parte (crédito) y abonos
-  - Consultar ventas separado en Realizadas · Con saldo · Devoluciones · Canceladas
+ETAPA 04 · Cajero: turno y venta directa
+========================================
+Qué trae (partes 11a y 11a corregida):
+  - Abrir turno con conteo de billetes (y autorización si el fondo no cuadra)
+  - Nueva venta: el cajero vende directo, con monto recibido y cambio
+  - Descuentos y saldo pendiente con autorización de gerente o administrador
+  - Pedidos que mandan los vendedores: cobrar, editar y cancelar
+  - Ticket compartido (resources/views/compartido)
 
-Migraciones nuevas: NO
+Migraciones nuevas: SÍ (tabla turnosCaja, fondo inicial de caja, permisos del cajero)
+    php artisan migrate
 
 Mensaje para el commit:
-    Ventas: cotizaciones guardadas, pago a crédito con abonos y listas separadas
+    Cajero: turno de caja, venta directa con cambio y cobro de pedidos

@@ -82,4 +82,8 @@
       boton.textContent = 'Preparando…';
     }, 0);
   }, true);
+
+  // 3) data-imprimir-auto: se imprime solo al llegar a la página (ej. el ticket después de cobrar)
+  const automatico = document.querySelector('a[data-imprimir][data-imprimir-auto]');
+  if (automatico) { automatico.click(); }
 })();

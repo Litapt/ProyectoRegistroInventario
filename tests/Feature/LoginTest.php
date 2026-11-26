@@ -20,20 +20,20 @@ function datosLogin(Trabajador $trabajador, string $contrasena = 'password'): ar
 
 // ---------- La base de datos ----------
 
-test('la migración crea las 23 tablas y los catálogos', function () {
+test('la migración crea las 24 tablas y los catálogos', function () {
     foreach (['roles', 'permisos', 'rolPermisos', 'trabajadores', 'configuraciones', 'folios', 'categorias',
         'marcas', 'ubicaciones', 'productos', 'productosCompatibilidades', 'motivos', 'movimientosInventario',
         'ajustesInventario', 'clientes', 'metodosPago', 'ventas', 'detalleVentas', 'pedidos', 'detallePedidos',
-        'pagosVenta', 'solicitudes', 'bitacora'] as $tabla) {
+        'pagosVenta', 'solicitudes', 'bitacora', 'turnosCaja'] as $tabla) {
         expect(Schema::hasTable($tabla))->toBeTrue("Falta la tabla {$tabla}");
     }
 
     expect(DB::table('roles')->count())->toBe(5)
         ->and(DB::table('permisos')->count())->toBe(17)
-        ->and(DB::table('rolPermisos')->count())->toBe(32)   // 17 del administrador + 15 del gerente
+        ->and(DB::table('rolPermisos')->count())->toBe(39)   // 17 del administrador + 15 del gerente + 7 del cajero
         ->and(DB::table('motivos')->count())->toBe(26)   // 17 iniciales + 9 de devolución
         ->and(DB::table('folios')->count())->toBe(6)
-        ->and(DB::table('configuraciones')->count())->toBe(16)
+        ->and(DB::table('configuraciones')->count())->toBe(17)   // + fondoInicialCaja
         ->and(Configuracion::valor('iva'))->toBe('16');
 });
 

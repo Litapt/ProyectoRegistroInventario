@@ -3,6 +3,7 @@
 use App\Http\Middleware\CierreSesionPorInactividad;
 use App\Http\Middleware\RequierePermiso;
 use App\Http\Middleware\RequiereRol;
+use App\Http\Middleware\RequiereTurnoAbierto;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,9 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Nombres cortos para las rutas:
         //   ->middleware('rol:ADMINISTRADOR')          quién entra a una sección
         //   ->middleware('permiso:ventas.cancelar')    quién puede hacer una acción
+        //   ->middleware('turno')                      el cajero ya abrió su turno de caja
         $middleware->alias([
             'rol' => RequiereRol::class,
             'permiso' => RequierePermiso::class,
+            'turno' => RequiereTurnoAbierto::class,
         ]);
 
         // Cierra la sesión si no se usa en X minutos (Configuración → Seguridad)

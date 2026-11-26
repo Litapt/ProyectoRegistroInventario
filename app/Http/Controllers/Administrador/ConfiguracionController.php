@@ -139,7 +139,12 @@ class ConfiguracionController extends Controller
             'iva' => ['required', 'numeric', 'min:0', 'max:100', 'decimal:0,2'],
             'formatoFolio' => ['required', Rule::in(Folios::FORMATOS_VENTA)],
             'metodosPago' => ['required', 'string', 'max:1000'],
+            'fondoCaja' => ['nullable', 'numeric', 'min:0', 'max:999999', 'decimal:0,2'],
         ], [
+            'fondoCaja.numeric' => 'El fondo de caja debe ser una cantidad en pesos.',
+            'fondoCaja.min' => 'El fondo de caja no puede ser negativo.',
+            'fondoCaja.max' => 'Revisa el fondo de caja.',
+            'fondoCaja.decimal' => 'El fondo de caja puede tener hasta 2 decimales.',
             'iva.required' => 'Escribe el IVA.',
             'iva.numeric' => 'El IVA debe ser un número.',
             'iva.max' => 'El IVA no puede pasar de 100 %.',
@@ -154,9 +159,12 @@ class ConfiguracionController extends Controller
         DB::transaction(function () use ($request, $datos, $metodos) {
             Configuracion::guardar('iva', rtrim(rtrim(number_format((float) $datos['iva'], 2, '.', ''), '0'), '.'), $request->user());
             DB::table('folios')->where('tipoDocumento', 'VENTA')->update(['formato' => $datos['formatoFolio']]);
+            if (isset($datos['fondoCaja']) && $datos['fondoCaja'] !== '') {
+                Configuracion::guardar('fondoInicialCaja', number_format((float) $datos['fondoCaja'], 2, '.', ''), $request->user());
+            }
             $cambios = ['metodosPago' => $this->sincronizar(MetodoPago::class, $metodos)];
             Bitacora::registrar('EDITAR', 'configuraciones', null, [
-                'seccion' => 'Ventas', 'iva' => $datos['iva'], 'formatoFolio' => $datos['formatoFolio'],
+                'seccion' => 'Ventas', 'iva' => $datos['iva'], 'formatoFolio' => $datos['formatoFolio'], 'fondoCaja' => $datos['fondoCaja'] ?? null,
             ] + $cambios);
         });
 
