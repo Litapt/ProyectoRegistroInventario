@@ -247,7 +247,11 @@
                             <button type="submit" class="btn-app btn-app-primary w-100" id="botonRegistrar" disabled>Registrar venta</button>
                             <div class="d-flex flex-wrap gap-2">
                                 <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonMostrarCotizacion" disabled
+<<<<<<< HEAD
                                         formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.vista') }}" formtarget="marcoImpresion">
+=======
+                                        formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.vista') }}" formtarget="_blank">
+>>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
                                     Mostrar cotización
                                 </button>
                                 @if ($puedeCotizar)

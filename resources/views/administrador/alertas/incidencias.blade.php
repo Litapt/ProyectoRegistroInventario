@@ -27,7 +27,7 @@
     @include('administrador.alertas.encabezado', ['activa' => 'incidencias'])
 
     <section class="panel mb-4">
-        <form method="get" action="{{ route('administrador.alertas.incidencias') }}" class="panel-body d-flex flex-wrap align-items-end gap-3">
+        <form method="get" action="{{ \App\Support\Ruta::a('alertas.incidencias') }}" class="panel-body d-flex flex-wrap align-items-end gap-3">
             @if ($verResueltas)
                 <input type="hidden" name="ver" value="resueltas">
             @endif
@@ -47,7 +47,7 @@
             </div>
             <button type="submit" class="btn-app btn-app-primary">Buscar</button>
             @if ($hayFiltros)
-                <a href="{{ route('administrador.alertas.incidencias', $verResueltas ? ['ver' => 'resueltas'] : []) }}" class="btn-text">Limpiar filtros</a>
+                <a href="{{ \App\Support\Ruta::a('alertas.incidencias', $verResueltas ? ['ver' => 'resueltas'] : []) }}" class="btn-text">Limpiar filtros</a>
             @endif
             @if ($puedeRegistrar)
                 <button type="button" class="btn-app btn-app-soft ms-auto" data-bs-toggle="modal" data-bs-target="#modalRegistrarIncidencia">
@@ -67,11 +67,11 @@
             </div>
             <div class="d-flex flex-wrap align-items-center gap-2">
                 @if ($verResueltas)
-                    <a href="{{ route('administrador.alertas.incidencias') }}" class="btn-text">Ver abiertas ({{ $totalIncidencias }})</a>
+                    <a href="{{ \App\Support\Ruta::a('alertas.incidencias') }}" class="btn-text">Ver abiertas ({{ $totalIncidencias }})</a>
                 @else
                     <span class="badge-estado badge-warning">{{ $totalIncidencias - $enRevision }} Abiertas</span>
                     <span class="badge-estado badge-primary">{{ $enRevision }} En revisión</span>
-                    <a href="{{ route('administrador.alertas.incidencias', ['ver' => 'resueltas']) }}" class="btn-text ms-2">Ver resueltas ({{ $resueltas }})</a>
+                    <a href="{{ \App\Support\Ruta::a('alertas.incidencias', ['ver' => 'resueltas']) }}" class="btn-text ms-2">Ver resueltas ({{ $resueltas }})</a>
                 @endif
             </div>
         </div>
@@ -116,8 +116,8 @@
                                 <button type="button" class="btn-app btn-app-outline btn-app-sm text-nowrap"
                                         data-bs-toggle="modal" data-bs-target="#modalIncidencia"
                                         data-incidencia="{{ json_encode($incidencia->datosIncidencia()) }}"
-                                        data-revision="{{ route('administrador.alertas.incidencias.revision', $incidencia) }}"
-                                        data-resolver="{{ route('administrador.alertas.incidencias.resolver', $incidencia) }}">
+                                        data-revision="{{ \App\Support\Ruta::a('alertas.incidencias.revision', $incidencia) }}"
+                                        data-resolver="{{ \App\Support\Ruta::a('alertas.incidencias.resolver', $incidencia) }}">
                                     Ver detalle
                                 </button>
                             </td>

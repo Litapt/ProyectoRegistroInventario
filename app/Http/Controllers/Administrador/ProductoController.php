@@ -157,7 +157,7 @@ class ProductoController extends Controller
         }
 
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['success', "Producto «{$producto->nombre}» registrado correctamente."]);
     }
 
@@ -213,7 +213,7 @@ class ProductoController extends Controller
         }
 
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['success', "Se guardaron los cambios de «{$producto->nombre}»."]);
     }
 
@@ -230,7 +230,7 @@ class ProductoController extends Controller
 
         $autorizo = $this->autorizar($request);
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.productos.index')->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('productos.index'))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($producto, $autorizo) {
@@ -245,7 +245,7 @@ class ProductoController extends Controller
         });
 
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['success', "«{$producto->nombre}» se desactivó. Puedes reactivarlo en «Ver desactivados»."]);
     }
 
@@ -253,12 +253,12 @@ class ProductoController extends Controller
     public function reactivar(Request $request, Producto $producto): RedirectResponse
     {
         if ($producto->activo) {
-            return redirect()->route('administrador.productos.index');
+            return redirect()->to(\App\Support\Ruta::a('productos.index'));
         }
 
         $autorizo = $this->autorizar($request);
         if (is_string($autorizo)) {
-            return redirect()->route('administrador.productos.index', ['ver' => 'desactivados'])->with('alerta', ['danger', $autorizo]);
+            return redirect()->to(\App\Support\Ruta::a('productos.index', ['ver' => 'desactivados']))->with('alerta', ['danger', $autorizo]);
         }
 
         DB::transaction(function () use ($producto, $autorizo) {
@@ -273,7 +273,7 @@ class ProductoController extends Controller
         });
 
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['success', "«{$producto->nombre}» está activo otra vez."]);
     }
 
@@ -398,7 +398,7 @@ class ProductoController extends Controller
     private function regresarConErrores(\Illuminate\Validation\Validator $validador, string $modal, ?Producto $producto = null): RedirectResponse
     {
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->withErrors($validador)
             ->withInput()
             ->with('modalProducto', $modal)
@@ -408,7 +408,7 @@ class ProductoController extends Controller
     private function noDisponible(): RedirectResponse
     {
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['warning', 'Ese producto está desactivado. Reactívalo para poder modificarlo.']);
     }
 }

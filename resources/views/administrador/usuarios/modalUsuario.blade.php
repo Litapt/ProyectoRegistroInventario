@@ -15,10 +15,10 @@
 
 <div class="modal fade modal-app" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioTitulo" aria-hidden="true"
      data-reabrir="{{ $modo && ($modo === 'registrar' || $editando) ? $modo : '' }}"
-     data-url-registrar="{{ route('administrador.usuarios.store') }}">
+     data-url-registrar="{{ \App\Support\Ruta::a('usuarios.store') }}">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <form method="post" class="modal-content" id="formUsuario" novalidate autocomplete="off"
-              action="{{ $editando ? route('administrador.usuarios.update', $usuarioReabierto) : route('administrador.usuarios.store') }}">
+              action="{{ $editando ? \App\Support\Ruta::a('usuarios.update', $usuarioReabierto) : \App\Support\Ruta::a('usuarios.store') }}">
             @csrf
             <input type="hidden" name="_method" value="{{ $editando ? 'PUT' : 'POST' }}" id="usuarioMetodo">
 

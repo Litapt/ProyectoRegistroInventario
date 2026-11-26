@@ -20,10 +20,10 @@
 
 <div class="modal fade modal-app" id="modalProducto" tabindex="-1" aria-labelledby="modalProductoTitulo" aria-hidden="true"
      data-reabrir="{{ $modo && ($modo === 'registrar' || $editando) ? '1' : '' }}"
-     data-url-registrar="{{ route('administrador.productos.store') }}">
+     data-url-registrar="{{ \App\Support\Ruta::a('productos.store') }}">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <form method="post" enctype="multipart/form-data" class="modal-content" id="formProducto" novalidate
-              action="{{ $editando ? route('administrador.productos.update', $productoReabierto) : route('administrador.productos.store') }}">
+              action="{{ $editando ? \App\Support\Ruta::a('productos.update', $productoReabierto) : \App\Support\Ruta::a('productos.store') }}">
             @csrf
             <input type="hidden" name="_method" value="{{ $editando ? 'PUT' : 'POST' }}" id="productoMetodo">
 

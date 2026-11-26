@@ -308,7 +308,11 @@ class VentaController extends Controller
 
         return redirect()
             ->to(\App\Support\Ruta::a('ventas.index'))
+<<<<<<< HEAD
             ->with('alerta', ['success', $mensaje])
+=======
+            ->with('alerta', ['success', "Venta {$venta->folio} registrada por " . Producto::formatoPrecio($venta->total) . '. El inventario ya se actualizó.'])
+>>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
             ->with('ventaRegistrada', $venta->idVenta);
     }
 
@@ -345,11 +349,15 @@ class VentaController extends Controller
         $datos = RegistroVenta::validar($request, false);
         $cotizacion = RegistroVenta::guardarCotizacion($datos, $request->user());
 
+<<<<<<< HEAD
         // Se queda en Ventas (sin cambiar de página); desde el aviso se imprime directo
         return redirect()->to(\App\Support\Ruta::a('ventas.index'))
             ->with('alerta', ['success', "Cotización {$cotizacion->folio} guardada por " . Producto::formatoPrecio($cotizacion->total)
                 . '. Vale hasta el ' . $cotizacion->vigencia->format('d/m/Y') . '. La encuentras en la pestaña «Cotizaciones».'])
             ->with('cotizacionGuardada', $cotizacion->idPedido);
+=======
+        return redirect()->to(\App\Support\Ruta::a('ventas.cotizacion', $cotizacion));
+>>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
     }
 
     public function cotizacion(Pedido $pedido): View

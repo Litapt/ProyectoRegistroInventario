@@ -129,7 +129,7 @@ class AjusteStockController extends Controller
         $despues = $esEntrada ? $ajuste->existenciaSistema + $cantidad : $ajuste->existenciaSistema - $cantidad;
 
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['success', "{$texto} ({$ajuste->folio}): «{$producto->nombre}» pasó de {$ajuste->existenciaSistema} a {$despues}."]);
     }
 
@@ -143,7 +143,7 @@ class AjusteStockController extends Controller
     private function noDisponible(): RedirectResponse
     {
         return redirect()
-            ->route('administrador.productos.index')
+            ->to(\App\Support\Ruta::a('productos.index'))
             ->with('alerta', ['warning', 'Ese producto está desactivado. Reactívalo para poder ajustar su stock.']);
     }
 }

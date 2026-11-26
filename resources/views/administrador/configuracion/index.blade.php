@@ -48,7 +48,7 @@
 
             {{-- ========== 01 · Datos de la tienda ========== --}}
             <section class="panel config-seccion" id="tienda">
-                <form method="post" action="{{ route('administrador.configuracion.tienda') }}" enctype="multipart/form-data" class="panel-body d-flex flex-column gap-3" novalidate>
+                <form method="post" action="{{ \App\Support\Ruta::a('configuracion.tienda') }}" enctype="multipart/form-data" class="panel-body d-flex flex-column gap-3" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="d-flex justify-content-between gap-3">
@@ -120,7 +120,7 @@
 
             {{-- ========== 02 · Inventario ========== --}}
             <section class="panel config-seccion" id="inventario">
-                <form method="post" action="{{ route('administrador.configuracion.inventario') }}" class="panel-body d-flex flex-column gap-3" novalidate>
+                <form method="post" action="{{ \App\Support\Ruta::a('configuracion.inventario') }}" class="panel-body d-flex flex-column gap-3" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="d-flex justify-content-between gap-3">
@@ -167,7 +167,7 @@
 
             {{-- ========== 03 · Ventas ========== --}}
             <section class="panel config-seccion" id="ventas">
-                <form method="post" action="{{ route('administrador.configuracion.ventas') }}" class="panel-body d-flex flex-column gap-3" novalidate>
+                <form method="post" action="{{ \App\Support\Ruta::a('configuracion.ventas') }}" class="panel-body d-flex flex-column gap-3" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="d-flex justify-content-between gap-3">
@@ -221,7 +221,7 @@
 
             {{-- ========== 04 · Notificaciones ========== --}}
             <section class="panel config-seccion" id="notificaciones">
-                <form method="post" action="{{ route('administrador.configuracion.notificaciones') }}" class="panel-body d-flex flex-column gap-3" novalidate>
+                <form method="post" action="{{ \App\Support\Ruta::a('configuracion.notificaciones') }}" class="panel-body d-flex flex-column gap-3" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="d-flex justify-content-between gap-3">
@@ -278,7 +278,7 @@
 
             {{-- ========== 05 · Seguridad ========== --}}
             <section class="panel config-seccion" id="seguridad">
-                <form method="post" action="{{ route('administrador.configuracion.seguridad') }}" class="panel-body d-flex flex-column gap-3" novalidate autocomplete="off">
+                <form method="post" action="{{ \App\Support\Ruta::a('configuracion.seguridad') }}" class="panel-body d-flex flex-column gap-3" novalidate autocomplete="off">
                     @csrf
                     @method('PUT')
                     <div class="d-flex justify-content-between gap-3">

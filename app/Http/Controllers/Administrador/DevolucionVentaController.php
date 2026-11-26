@@ -24,7 +24,7 @@ class DevolucionVentaController extends Controller
 {
     public function store(Request $request, Venta $venta): RedirectResponse
     {
-        $volver = redirect()->to(url()->previous(route('administrador.ventas.consultar')));
+        $volver = redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')));
 
         try {
             $datos = validator($request->all(), [

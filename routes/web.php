@@ -85,10 +85,13 @@ $pantallasConMenuLateral = function () {
     });
     Route::get('/ventas/consultar', [VentaController::class, 'consultar'])
         ->middleware('permiso:ventas.consultar')->name('ventas.consultar');
+<<<<<<< HEAD
     Route::post('/ventas/{venta}/abono', [VentaController::class, 'abonar'])
         ->middleware('permiso:pagos.registrar')->name('ventas.abono');
     Route::get('/ventas/cotizaciones', [VentaController::class, 'cotizaciones'])
         ->middleware('permiso:pedidos.gestionar')->name('ventas.cotizaciones');
+=======
+>>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
     Route::patch('/ventas/{venta}/cancelar', [VentaController::class, 'cancelar'])
         ->middleware('permiso:ventas.cancelar')->name('ventas.cancelar');
     // Devoluciones (regresan dinero: piden autorización y el permiso de cancelar ventas)

@@ -10,7 +10,7 @@
 <div class="modal fade modal-app" id="modalCancelarVenta" tabindex="-1" aria-labelledby="cancelarVentaTitulo" aria-hidden="true"
      @if ($reabrir)
          data-reabrir="1"
-         data-url="{{ route('administrador.ventas.cancelar', $ventaACancelar) }}"
+         data-url="{{ \App\Support\Ruta::a('ventas.cancelar', $ventaACancelar) }}"
          data-folio="{{ $ventaACancelar->folio }}"
          data-detalle="{{ $ventaACancelar->nombreCliente() }} · {{ \App\Models\Producto::formatoPrecio($ventaACancelar->total) }} · {{ $ventaACancelar->fechaVenta->format('d/m/Y h:i a') }}"
      @endif>

@@ -33,7 +33,7 @@
     </div>
 
     <section class="panel">
-        <form method="get" action="{{ route('administrador.usuarios.index') }}" class="panel-body d-flex flex-column gap-3">
+        <form method="get" action="{{ \App\Support\Ruta::a('usuarios.index') }}" class="panel-body d-flex flex-column gap-3">
             @if ($verInactivos)
                 <input type="hidden" name="ver" value="inactivos">
             @endif
@@ -50,14 +50,14 @@
                            class="form-control input-app filtro-buscar" placeholder="Nombre o correo">
                     <button type="submit" class="btn-app btn-app-primary">Buscar</button>
                     @if ($buscar !== '')
-                        <a href="{{ route('administrador.usuarios.index', $verInactivos ? ['ver' => 'inactivos'] : []) }}" class="btn-text">Limpiar búsqueda</a>
+                        <a href="{{ \App\Support\Ruta::a('usuarios.index', $verInactivos ? ['ver' => 'inactivos'] : []) }}" class="btn-text">Limpiar búsqueda</a>
                     @endif
                     <span class="panel-text ms-auto">
                         {{ number_format($totalActivos) }} {{ $totalActivos === 1 ? 'usuario activo' : 'usuarios activos' }} ·
                         @if ($verInactivos)
-                            <a href="{{ route('administrador.usuarios.index') }}" class="btn-text">Ver activos</a>
+                            <a href="{{ \App\Support\Ruta::a('usuarios.index') }}" class="btn-text">Ver activos</a>
                         @else
-                            <a href="{{ route('administrador.usuarios.index', ['ver' => 'inactivos']) }}" class="btn-text">Ver inactivos ({{ $totalInactivos }})</a>
+                            <a href="{{ \App\Support\Ruta::a('usuarios.index', ['ver' => 'inactivos']) }}" class="btn-text">Ver inactivos ({{ $totalInactivos }})</a>
                         @endif
                     </span>
                 </div>
@@ -116,7 +116,7 @@
                                     @if ($verInactivos)
                                         <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalAutorizacion"
-                                                data-url="{{ route('administrador.usuarios.reactivar', $usuario) }}"
+                                                data-url="{{ \App\Support\Ruta::a('usuarios.reactivar', $usuario) }}"
                                                 data-titulo="Reactivar usuario"
                                                 data-texto="El usuario podrá volver a iniciar sesión con su correo y su contraseña de siempre."
                                                 data-nombre="{{ $usuario->nombreCompleto() }}"
@@ -127,7 +127,7 @@
                                     @else
                                         <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalUsuario" data-modo="editar"
-                                                data-url="{{ route('administrador.usuarios.update', $usuario) }}"
+                                                data-url="{{ \App\Support\Ruta::a('usuarios.update', $usuario) }}"
                                                 data-usuario="{{ json_encode($usuario->datosParaEditar()) }}"
                                                 data-yo="{{ $esYo ? '1' : '' }}">
                                             Editar
@@ -135,7 +135,7 @@
                                         @if ($usuario->activo && !$esYo)
                                             <button type="button" class="btn-app btn-app-danger btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalAutorizacion"
-                                                    data-url="{{ route('administrador.usuarios.desactivar', $usuario) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('usuarios.desactivar', $usuario) }}"
                                                     data-titulo="Eliminar usuario"
                                                     data-texto="El usuario quedará inactivo: ya no podrá iniciar sesión, pero sus ventas y movimientos se conservan. Lo puedes reactivar en «Ver inactivos»."
                                                     data-nombre="{{ $usuario->nombreCompleto() }}"

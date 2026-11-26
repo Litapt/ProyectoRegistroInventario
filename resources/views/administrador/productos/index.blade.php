@@ -37,7 +37,7 @@
 
     <section class="panel">
         {{-- Menú consulta: es un formulario GET, así los filtros quedan en la dirección --}}
-        <form method="get" action="{{ route('administrador.productos.index') }}" class="panel-body d-flex flex-column gap-3" id="formFiltros">
+        <form method="get" action="{{ \App\Support\Ruta::a('productos.index') }}" class="panel-body d-flex flex-column gap-3" id="formFiltros">
             @if ($verDesactivados)
                 <input type="hidden" name="ver" value="desactivados">
             @endif
@@ -56,15 +56,15 @@
                            class="form-control input-app filtro-buscar" placeholder="Nombre o código de refacción">
                     <button type="submit" class="btn-app btn-app-primary">Buscar</button>
                     @if ($hayFiltros)
-                        <a href="{{ route('administrador.productos.index', $verDesactivados ? ['ver' => 'desactivados'] : []) }}" class="btn-text">Limpiar filtros</a>
+                        <a href="{{ \App\Support\Ruta::a('productos.index', $verDesactivados ? ['ver' => 'desactivados'] : []) }}" class="btn-text">Limpiar filtros</a>
                     @endif
                     <span class="panel-text ms-auto">
                         {{ number_format($totalActivos) }} {{ $totalActivos === 1 ? 'producto' : 'productos' }} · Precios en MXN
                         ·
                         @if ($verDesactivados)
-                            <a href="{{ route('administrador.productos.index') }}" class="btn-text">Ver activos</a>
+                            <a href="{{ \App\Support\Ruta::a('productos.index') }}" class="btn-text">Ver activos</a>
                         @else
-                            <a href="{{ route('administrador.productos.index', ['ver' => 'desactivados']) }}" class="btn-text">Ver desactivados ({{ $totalDesactivados }})</a>
+                            <a href="{{ \App\Support\Ruta::a('productos.index', ['ver' => 'desactivados']) }}" class="btn-text">Ver desactivados ({{ $totalDesactivados }})</a>
                         @endif
                     </span>
                 </div>
@@ -160,19 +160,19 @@
                                     @if ($verDesactivados)
                                         <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                 data-bs-toggle="modal" data-bs-target="#modalDesactivar" data-accion="reactivar"
-                                                data-url="{{ route('administrador.productos.reactivar', $producto) }}"
+                                                data-url="{{ \App\Support\Ruta::a('productos.reactivar', $producto) }}"
                                                 data-nombre="{{ $producto->nombre }}"
                                                 data-detalle="{{ $producto->codigoInterno }} · {{ $producto->marca?->nombre }}">
                                             Reactivar
                                         </button>
                                     @else
                                         @if (auth()->user()->puede('inventario.ajustar'))
-                                            <a href="{{ route('administrador.productos.ajuste', $producto) }}" class="btn-app btn-app-soft btn-app-sm">Ajuste stock</a>
+                                            <a href="{{ \App\Support\Ruta::a('productos.ajuste', $producto) }}" class="btn-app btn-app-soft btn-app-sm">Ajuste stock</a>
                                         @endif
                                         @if (auth()->user()->puede('productos.gestionar'))
                                             <button type="button" class="btn-app btn-app-outline btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalProducto" data-modo="editar"
-                                                    data-url="{{ route('administrador.productos.update', $producto) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('productos.update', $producto) }}"
                                                     data-producto="{{ json_encode($producto->datosParaEditar()) }}">
                                                 Editar
                                             </button>
@@ -180,7 +180,7 @@
                                         @if (auth()->user()->puede('productos.desactivar'))
                                             <button type="button" class="btn-app btn-app-danger btn-app-sm"
                                                     data-bs-toggle="modal" data-bs-target="#modalDesactivar" data-accion="desactivar"
-                                                    data-url="{{ route('administrador.productos.desactivar', $producto) }}"
+                                                    data-url="{{ \App\Support\Ruta::a('productos.desactivar', $producto) }}"
                                                     data-nombre="{{ $producto->nombre }}"
                                                     data-detalle="{{ $producto->codigoInterno }} · {{ $producto->marca?->nombre }}">
                                                 Eliminar

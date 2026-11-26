@@ -11,10 +11,10 @@
 
 <div class="modal fade modal-app" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteTitulo" aria-hidden="true"
      data-reabrir="{{ $modo && ($modo === 'registrar' || $editando) ? $modo : '' }}"
-     data-url-registrar="{{ route('administrador.clientes.store') }}">
+     data-url-registrar="{{ \App\Support\Ruta::a('clientes.store') }}">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <form method="post" class="modal-content" id="formCliente" novalidate
-              action="{{ $editando ? route('administrador.clientes.update', $clienteReabierto) : route('administrador.clientes.store') }}"
+              action="{{ $editando ? \App\Support\Ruta::a('clientes.update', $clienteReabierto) : \App\Support\Ruta::a('clientes.store') }}"
               data-nombre-original="{{ $editando ? $clienteReabierto->nombre() : '' }}"
               data-codigo="{{ $editando ? $clienteReabierto->codigo() : '' }}">
             @csrf

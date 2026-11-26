@@ -10,7 +10,10 @@
     $pestanas = [
         ['clave' => 'registrar', 'texto' => 'Registrar venta', 'ruta' => 'ventas.index', 'permiso' => 'ventas.registrar'],
         ['clave' => 'consultar', 'texto' => 'Consultar ventas', 'ruta' => 'ventas.consultar', 'permiso' => 'ventas.consultar'],
+<<<<<<< HEAD
         ['clave' => 'cotizaciones', 'texto' => 'Cotizaciones', 'ruta' => 'ventas.cotizaciones', 'permiso' => 'pedidos.gestionar'],
+=======
+>>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
         ['clave' => 'solicitudes', 'texto' => 'Solicitudes', 'ruta' => 'ventas.solicitudes', 'permiso' => 'solicitudes.autorizar'],
     ];
 @endphp
