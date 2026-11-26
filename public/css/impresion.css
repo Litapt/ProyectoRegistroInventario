@@ -52,3 +52,6 @@ td { padding: 6px 4px; vertical-align: top; border-bottom: 1px solid #F3F4F6; }
   .documento { max-width: none; box-shadow: none; border-radius: 0; padding: 0; }
   @page { margin: 10mm; }
 }
+
+/* Tickets de 80 mm: textos un poco más chicos para que quepan las columnas */
+body[style*="80mm"] .documento { font-size: 12px; }

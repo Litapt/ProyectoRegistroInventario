@@ -62,11 +62,24 @@
 
   // Antes que ventas.js: si falta algo, no se envía (y ventas.js ni se entera)
   form.addEventListener('submit', function (e) {
+    // "Mostrar cotización" o "Convertir a cotización": no se cobra; sólo el descuento pide autorización
+    const quien = e.submitter;
+    const esCotizacion = !!(quien && quien.getAttribute('formaction'));
+
     function detener(campo) {
       e.preventDefault();
       e.stopImmediatePropagation();
       campo.classList.add('is-invalid');
       campo.focus();
+    }
+
+    if (esCotizacion) {
+      if (cuentas.descuento > 0) {
+        $('bloqueAutorizacion').classList.remove('d-none');
+        if ($('ventaCorreo').value.trim() === '') { detener($('ventaCorreo')); return; }
+        if ($('ventaContrasena').value === '') { detener($('ventaContrasena')); return; }
+      }
+      return;
     }
 
     if (esEfectivo()) {

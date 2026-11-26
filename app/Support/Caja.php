@@ -4,6 +4,10 @@ namespace App\Support;
 
 use App\Models\Bitacora;
 use App\Models\Configuracion;
+use App\Models\MetodoPago;
+use App\Models\PagoVenta;
+use App\Models\Solicitud;
+use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\Trabajador;
 use App\Models\TurnoCaja;
@@ -12,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /*
-    La caja del cajero: abrir el turno con su fondo (y, más adelante, el corte).
+    La caja del cajero: abrir el turno con su fondo y, al terminar, el CORTE DE CAJA.
 
     El fondo se cuenta por billetes ($500, $200, $100, $50, $20) y monedas (un monto).
     El total lo calcula el servidor con el conteo; lo que se ve en pantalla es sólo ayuda.
@@ -125,6 +129,114 @@ class Caja
 
             Bitacora::registrar('ABRIR_TURNO', 'turnosCaja', $turno->idTurno, [
                 'fondo' => $conteo['total'], 'autorizado' => $autorizado,
+            ], $cuadra ? null : $autorizo);
+
+            return $turno;
+        });
+    }
+
+    /*
+        Lo que DEBERÍA haber en la caja al hacer el corte (Figma: "Corte esperado"):
+          - Efectivo: el fondo + lo que cobró en efectivo en su turno − lo que regresó en devoluciones.
+          - Cada otro método (tarjeta, transferencia...): lo que cobró con él en su turno.
+        "Cobró" = pagos que registró ESTE cajero desde que abrió el turno (ventas y abonos), sin ventas canceladas.
+    */
+    public static function esperado(TurnoCaja $turno): array
+    {
+        $hasta = $turno->fechaCierre ?? now();
+        $pagos = PagoVenta::with('metodo')
+            ->where('fk_idTrabajador', $turno->fk_idTrabajador)
+            ->whereBetween('fechaPago', [$turno->fechaApertura, $hasta])
+            ->whereHas('venta', fn ($v) => $v->where('estadoVenta', Venta::COMPLETADA))
+            ->get();
+
+        $reembolsos = round((float) Solicitud::where('tipoSolicitud', Solicitud::DEVOLUCION)->where('estado', Solicitud::APROBADA)
+            ->where('fk_idTrabajadorSolicitante', $turno->fk_idTrabajador)
+            ->whereBetween('fechaSolicitud', [$turno->fechaApertura, $hasta])
+            ->get()->sum(fn ($d) => $d->reembolso()), 2);
+
+        $metodos = MetodoPago::activos()->get();
+        $esEfectivo = fn ($metodo) => mb_strtolower(trim($metodo->nombre)) === 'efectivo';
+        $cobradoCon = fn ($id) => round((float) $pagos->where('fk_idMetodoPago', $id)->sum('monto'), 2);
+
+        $efectivo = $metodos->first($esEfectivo);
+        $cobradoEfectivo = $efectivo ? $cobradoCon($efectivo->idMetodoPago) : 0.0;
+
+        // Otros métodos: los activos y, si se desactivó uno que sí se usó, también
+        $otros = $metodos->reject($esEfectivo)->values();
+        foreach ($pagos->pluck('metodo')->filter()->unique('idMetodoPago') as $usado) {
+            if (!$esEfectivo($usado) && !$otros->contains('idMetodoPago', $usado->idMetodoPago)) {
+                $otros->push($usado);
+            }
+        }
+
+        return [
+            'fondo' => (float) $turno->fondoInicial,
+            'cobradoEfectivo' => $cobradoEfectivo,
+            'reembolsos' => $reembolsos,
+            'efectivo' => round((float) $turno->fondoInicial + $cobradoEfectivo - $reembolsos, 2),
+            'otros' => $otros->map(fn ($m) => ['id' => $m->idMetodoPago, 'nombre' => $m->nombre, 'esperado' => $cobradoCon($m->idMetodoPago)])->values()->all(),
+            'ventas' => $pagos->pluck('fk_idVenta')->unique()->count(),
+        ];
+    }
+
+    /*
+        Guarda el corte y CIERRA el turno. $otrosContados: [idMetodo => monto contado].
+        Si el total contado no es el esperado (falta o sobra dinero), lo autoriza un gerente
+        o administrador y se escribe qué pasó.
+    */
+    public static function cerrar(TurnoCaja $turno, array $conteo, array $otrosContados, ?Trabajador $autorizo, ?string $observaciones): TurnoCaja
+    {
+        return DB::transaction(function () use ($turno, $conteo, $otrosContados, $autorizo, $observaciones) {
+            $turno = TurnoCaja::whereKey($turno->idTurno)->lockForUpdate()->firstOrFail();
+            if ($turno->estado !== TurnoCaja::ABIERTO) {
+                throw ValidationException::withMessages(['corte' => "El {$turno->nombre()} ya tiene su corte."]);
+            }
+
+            $esperado = self::esperado($turno);
+            $otros = collect($esperado['otros'])->map(fn ($m) => $m + ['contado' => round((float) ($otrosContados[$m['id']] ?? 0), 2)]);
+
+            $totalContado = round($conteo['total'] + $otros->sum('contado'), 2);
+            $totalEsperado = round($esperado['efectivo'] + $otros->sum('esperado'), 2);
+            $diferencia = round($totalContado - $totalEsperado, 2);
+            $cuadra = abs($diferencia) < 0.005;
+            $observaciones = $observaciones !== null && trim($observaciones) !== '' ? trim($observaciones) : null;
+
+            if (!$cuadra && !$autorizo) {
+                throw ValidationException::withMessages(['corte' => ($diferencia < 0 ? 'Faltan ' : 'Sobran ') . Producto::formatoPrecio(abs($diferencia))
+                    . '. Para guardar el corte así, un gerente o administrador tiene que autorizarlo.']);
+            }
+            if (!$cuadra && $observaciones === null) {
+                throw ValidationException::withMessages(['corte' => 'Escribe en «Observaciones» qué pasó con la diferencia.']);
+            }
+
+            // Tarjeta y transferencia también en sus columnas (para consultas rápidas)
+            $porNombre = fn (string $texto, string $campo) => round((float) $otros
+                ->filter(fn ($m) => str_contains(mb_strtolower($m['nombre']), $texto))->sum($campo), 2);
+
+            $turno->fill([
+                'estado' => TurnoCaja::CERRADO,
+                'fechaCierre' => now(),
+                'conteoCierre' => [
+                    'billetes' => $conteo['billetes'],
+                    'monedas' => $conteo['monedas'],
+                    'otros' => $otros->values()->all(),
+                    'cobradoEfectivo' => $esperado['cobradoEfectivo'],
+                    'reembolsos' => $esperado['reembolsos'],
+                ],
+                'efectivoContado' => $conteo['total'],
+                'tarjetaContado' => $porNombre('tarjeta', 'contado'),
+                'transferenciaContado' => $porNombre('transfer', 'contado'),
+                'efectivoEsperado' => $esperado['efectivo'],
+                'tarjetaEsperado' => $porNombre('tarjeta', 'esperado'),
+                'transferenciaEsperado' => $porNombre('transfer', 'esperado'),
+                'diferencia' => $diferencia,
+                'fk_idTrabajadorAutorizaCierre' => $cuadra ? null : $autorizo->idTrabajador,
+                'observacionesCierre' => $observaciones,
+            ])->save();
+
+            Bitacora::registrar('CORTE_CAJA', 'turnosCaja', $turno->idTurno, [
+                'contado' => $totalContado, 'esperado' => $totalEsperado, 'diferencia' => $diferencia,
             ], $cuadra ? null : $autorizo);
 
             return $turno;

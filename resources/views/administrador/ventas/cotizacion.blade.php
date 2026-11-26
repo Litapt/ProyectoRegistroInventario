@@ -84,6 +84,8 @@
     </p>
 
     @if ($folio)
-        <p class="no-imprimir centro"><a href="{{ \App\Support\Ruta::a('ventas.index') }}">Regresar a Ventas</a></p>
+        @if (\App\Support\Ruta::existe('ventas.index'))
+            <p class="no-imprimir centro"><a href="{{ \App\Support\Ruta::a('ventas.index') }}">Regresar a Ventas</a></p>
+        @endif
     @endif
 @endsection

@@ -33,4 +33,9 @@ class PagoVenta extends Model
     {
         return $this->belongsTo(MetodoPago::class, 'fk_idMetodoPago', 'idMetodoPago');
     }
+
+    public function venta(): BelongsTo
+    {
+        return $this->belongsTo(Venta::class, 'fk_idVenta', 'idVenta');
+    }
 }

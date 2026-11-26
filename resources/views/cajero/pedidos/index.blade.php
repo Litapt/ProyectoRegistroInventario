@@ -2,7 +2,8 @@
     Cajero · Pedidos (Figma: "Cajero - Principal", "Completados" y "Cancelados").
     Lo manda Cajero\PedidoController@index. Los pedidos los arman los vendedores.
 
-    - Pendientes de cobrar (el que llegó primero va arriba), cobrados y cancelados.
+    - Pendientes de cobrar (los ve cualquier cajero; el que llegó primero va arriba).
+    - Cobrados y cancelados: sólo los que cobró o canceló ESTE cajero.
     - "Ver" abre el detalle; "Cobrar" lleva a la pantalla de cobro;
       "Cancelar" pide el motivo y la autorización de un gerente o administrador.
 --}}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administrador;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bitacora;
 use App\Models\Cliente;
 use App\Models\Configuracion;
 use App\Models\MetodoPago;
@@ -14,6 +15,7 @@ use App\Models\Solicitud;
 use App\Models\Venta;
 use App\Support\Autorizacion;
 use App\Support\RegistroVenta;
+use App\Support\ReporteVentas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,7 +83,10 @@ class VentaController extends Controller
             'hasta' => $this->fecha($request->query('hasta')),
         ];
 
+        $soloDe = $this->soloDe($request);
+
         $consulta = Venta::query()
+            ->when($soloDe, fn ($q) => $q->where('fk_idTrabajador', $soloDe))
             ->when($filtros['folio'] !== '', fn ($q) => $q->where('folio', 'like', '%' . $filtros['folio'] . '%'))
             ->when($filtros['cliente'] !== '', function ($q) use ($filtros) {
                 // "público" encuentra las ventas sin cliente
@@ -103,6 +108,7 @@ class VentaController extends Controller
         // Devoluciones: con los mismos filtros (folio de la devolución o de la venta, cliente, quién la registró, fechas)
         $consultaDevoluciones = Solicitud::query()
             ->where('tipoSolicitud', Solicitud::DEVOLUCION)->where('estado', Solicitud::APROBADA)
+            ->when($soloDe, fn ($q) => $q->whereHas('venta', fn ($v) => $v->where('fk_idTrabajador', $soloDe)))
             ->when($filtros['folio'] !== '', fn ($q) => $q->where(fn ($w) => $w
                 ->where('folio', 'like', '%' . $filtros['folio'] . '%')
                 ->orWhereHas('venta', fn ($v) => $v->where('folio', 'like', '%' . $filtros['folio'] . '%'))))
@@ -203,8 +209,11 @@ class VentaController extends Controller
         $verCobradas = $request->query('ver') === 'cobradas';
         $buscar = mb_substr(trim((string) $request->query('buscar', '')), 0, 60);
 
+        $soloDe = $this->soloDe($request);
+        $suyas = fn ($q) => $q->where('tipoPedido', Pedido::COTIZACION)->when($soloDe, fn ($w) => $w->where('fk_idTrabajador', $soloDe));
+
         $cotizaciones = Pedido::with(['cliente', 'trabajador', 'venta'])
-            ->where('tipoPedido', Pedido::COTIZACION)
+            ->where($suyas)
             ->where('estadoPedido', $verCobradas ? Pedido::CONVERTIDA : Pedido::PENDIENTE)
             ->when($buscar !== '', fn ($q) => $q->where(fn ($q) => $q
                 ->where('folio', 'like', "%{$buscar}%")
@@ -216,8 +225,8 @@ class VentaController extends Controller
             'cotizaciones' => $cotizaciones,
             'verCobradas' => $verCobradas,
             'buscar' => $buscar,
-            'totalPendientes' => Pedido::where('tipoPedido', Pedido::COTIZACION)->where('estadoPedido', Pedido::PENDIENTE)->count(),
-            'totalCobradas' => Pedido::where('tipoPedido', Pedido::COTIZACION)->where('estadoPedido', Pedido::CONVERTIDA)->count(),
+            'totalPendientes' => Pedido::where($suyas)->where('estadoPedido', Pedido::PENDIENTE)->count(),
+            'totalCobradas' => Pedido::where($suyas)->where('estadoPedido', Pedido::CONVERTIDA)->count(),
         ]);
     }
 
@@ -385,7 +394,44 @@ class VentaController extends Controller
         ]);
     }
 
+    /*
+        Botón "Imprimir ventas del día": las ventas y cobros de QUIEN lo pide, en el día elegido,
+        para entregarlas con el corte de caja. Siempre lo autoriza un gerente o administrador.
+        Se imprime en un marco invisible (javascript/imprimir.js): si algo falla, el error sale en la pantalla.
+    */
+    public function ventasDelDia(Request $request): View|RedirectResponse
+    {
+        $volver = fn (string $mensaje) => redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')))
+            ->with('alerta', ['danger', $mensaje]);
+
+        $dia = $this->fecha($request->input('dia')) ?? now();
+        if ($dia->isAfter(now()->endOfDay())) {
+            return $volver('Elige un día que ya haya pasado (o el de hoy).');
+        }
+
+        $autorizo = Autorizacion::verificar($request, 'correo_autoriza', 'contrasena_autoriza');
+        if (is_string($autorizo)) {
+            return $volver('Para imprimir tus ventas del día: ' . $autorizo);
+        }
+
+        Bitacora::registrar('IMPRIMIR_VENTAS_DIA', 'ventas', null, ['dia' => $dia->toDateString()], $autorizo);
+
+        return view('compartido.ventasDelDia', ReporteVentas::delDia($request->user(), $dia) + [
+            'autorizo' => $autorizo,
+            'tienda' => \App\Support\Tienda::datos(),
+        ]);
+    }
+
     // ---------------------------------------------------------------------
+
+    /*
+        ¿Sólo se ven las ventas y cotizaciones de un trabajador? El administrador y el gerente
+        ven todas (null); el cajero sólo las suyas (Cajero\VentaController lo cambia).
+    */
+    protected function soloDe(Request $request): ?int
+    {
+        return null;
+    }
 
     /* Si "Editar venta" regresó con un error: la venta y lo que se había escrito */
     private function edicionReabierta(): ?array

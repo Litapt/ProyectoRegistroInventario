@@ -16,12 +16,16 @@ use Illuminate\Support\Facades\Route;
         Ruta::existe('alertas.index')    → ¿esa pantalla existe para este rol?
 
     Lo que cada quien puede hacer lo deciden los permisos de su rol (tabla rolPermisos).
+
+    El CAJERO tiene sus propias pantallas (barra superior), pero reusa algunas ventanas de Ventas
+    (detalle, abono, devolución, cancelar). Sus rutas se llaman igual con "cajero." al inicio,
+    así esas ventanas encuentran la suya: Ruta::a('ventas.abono', $venta) → cajero.ventas.abono.
 */
 class Ruta
 {
-    public const CARPETAS = ['ADMINISTRADOR' => 'administrador', 'GERENTE' => 'gerente'];
+    public const CARPETAS = ['ADMINISTRADOR' => 'administrador', 'GERENTE' => 'gerente', 'CAJERO' => 'cajero'];
 
-    /* "administrador" o "gerente": la de la pantalla actual; si no se sabe, la del rol */
+    /* "administrador", "gerente" o "cajero": la de la pantalla actual; si no se sabe, la del rol */
     public static function carpeta(): string
     {
         $actual = request()->route()?->getName();

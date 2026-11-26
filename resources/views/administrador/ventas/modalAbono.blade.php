@@ -1,6 +1,8 @@
 {{--
     Ventana "Registrar abono" para ventas a crédito (las que quedaron con saldo pendiente).
     El abono no puede pasar de lo que debe. Si el servidor regresa un error, se vuelve a abrir.
+    En la caja (cajero) también pide la autorización de un gerente o administrador:
+        @include('administrador.ventas.modalAbono', ['abonoConAutorizacion' => true])
 --}}
 @php
     $reabrirAbono = $ventaAAbonar && $ventaAAbonar->tieneSaldo();
@@ -58,6 +60,10 @@
                     </div>
                 </div>
                 <p class="field-help m-0" id="abonoRestante"></p>
+
+                @if ($abonoConAutorizacion ?? false)
+                    @include('cajero.autorizacion', ['prefijo' => 'abono', 'reabrir' => $reabrirAbono, 'ayuda' => 'Un abono no es un pago directo: lo autoriza un superior.'])
+                @endif
             </div>
 
             <div class="modal-footer justify-content-end gap-3">

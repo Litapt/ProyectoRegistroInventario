@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cajero;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\MetodoPago;
+use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Support\Caja;
@@ -21,6 +22,9 @@ use Illuminate\View\View;
       paga sólo una parte, la venta necesita el correo y la contraseña de un gerente o administrador.
     - En efectivo escribe con cuánto paga el cliente y ve el cambio.
     - Al cobrar se queda en esta pantalla (lista para la siguiente venta) y el ticket se imprime solo.
+    - Cotizaciones: "Mostrar cotización" (sólo imprime) y "Convertir a cotización" (la guarda),
+      sin permiso; con descuento piden autorización (Cajero\VentaController).
+    - ?cotizacion=ID: "Cobrar" una cotización guardada.
     Lo que se guarda lo hace App\Support\RegistroVenta (el mismo código que el administrador).
 */
 class InicioController extends Controller
@@ -28,7 +32,23 @@ class InicioController extends Controller
     public function index(Request $request): View
     {
         $metodos = MetodoPago::activos()->get();
+        $productos = old('productos');
         $idCliente = old('cliente');
+        $descuento = old('descuento');
+
+        // "Cobrar" una cotización guardada: se arma la venta con sus productos, cliente y descuento
+        $cotizacion = null;
+        $idCotizacion = old('cotizacion', $request->query('cotizacion'));
+        if ($idCotizacion) {
+            $cotizacion = Pedido::with('detalles')->where('tipoPedido', Pedido::COTIZACION)
+                ->where('fk_idTrabajador', $request->user()->idTrabajador)   // sólo sus cotizaciones
+                ->where('estadoPedido', Pedido::PENDIENTE)->find((int) $idCotizacion);
+            if ($cotizacion && $productos === null) {
+                $productos = $cotizacion->detalles->map(fn ($d) => ['id' => $d->fk_idProducto, 'cantidad' => $d->cantidad])->all();
+                $idCliente = $cotizacion->fk_idCliente;
+                $descuento = $cotizacion->porcentajeDescuento() ?: null;
+            }
+        }
         $cliente = $idCliente ? Cliente::activos()->find((int) $idCliente) : null;
 
         return view('cajero.inicio', [
@@ -37,9 +57,13 @@ class InicioController extends Controller
             'billetes' => Caja::BILLETES,
             'metodosPago' => $metodos,
             'idEfectivo' => PedidoController::idEfectivoDe($metodos),
-            'carritoAnterior' => old('productos') !== null ? RegistroVenta::carritoDesde(old('productos')) : [],
+            'carritoAnterior' => $productos !== null ? RegistroVenta::carritoDesde($productos) : [],
+            'descuentoAnterior' => $descuento,
+            'cotizacion' => $cotizacion,
+            'cotizacionGuardada' => session('cotizacionGuardada') ? Pedido::with('cliente')->find(session('cotizacionGuardada')) : null,
             'clienteAnterior' => $cliente ? ['id' => $cliente->idCliente, 'nombre' => $cliente->nombre(), 'codigo' => $cliente->codigo(), 'telefono' => $cliente->telefono] : null,
             'ventaCobrada' => session('ventaCobrada') ? Venta::with('pagos')->find(session('ventaCobrada')) : null,
+            'corteGuardado' => session('corteGuardado') ? \App\Models\TurnoCaja::find(session('corteGuardado')) : null,
         ]);
     }
 
@@ -47,6 +71,10 @@ class InicioController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $datos = RegistroVenta::validar($request, true);
+        // Sólo puede cobrar sus propias cotizaciones
+        if ($datos['cotizacion'] && !Pedido::whereKey($datos['cotizacion'])->where('fk_idTrabajador', $request->user()->idTrabajador)->exists()) {
+            $datos['cotizacion'] = null;
+        }
         $metodos = MetodoPago::activos()->get();
         $esEfectivo = $datos['metodoPago'] === PedidoController::idEfectivoDe($metodos);
 

@@ -41,6 +41,18 @@
         </p>
     </div>
 
+    @if ($corteGuardado)
+        <div class="notice notice-ok d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <div class="notice-title">Corte del {{ $corteGuardado->nombre() }} guardado</div>
+                <div class="notice-text">El comprobante con todas tus ventas del turno se manda a imprimir solo. Para seguir vendiendo, abre otro turno.</div>
+            </div>
+            <a href="{{ route('cajero.corte.comprobante', $corteGuardado) }}" class="btn-app btn-app-outline" data-imprimir data-imprimir-auto>
+                Imprimir corte
+            </a>
+        </div>
+    @endif
+
     @if ($ventaCobrada)
         <div class="notice notice-ok d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
             <div>
@@ -60,6 +72,27 @@
         </div>
     @endif
 
+    @if ($cotizacionGuardada)
+        <div class="notice notice-ok d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <div class="notice-title">Cotización {{ $cotizacionGuardada->folio }} · {{ $dinero($cotizacionGuardada->total) }}</div>
+                <div class="notice-text">{{ $cotizacionGuardada->cliente?->nombre() ?? 'Público en general' }} · válida hasta el {{ $cotizacionGuardada->vigencia->format('d/m/Y') }}</div>
+            </div>
+            <a href="{{ route('cajero.ventas.cotizacion', $cotizacionGuardada) }}" class="btn-app btn-app-outline" data-imprimir>Imprimir cotización</a>
+        </div>
+    @endif
+
+    @if ($cotizacion)
+        <div class="notice notice-warning mb-4">
+            <div class="notice-title">Cobrando la cotización {{ $cotizacion->folio }} (cotizada en {{ $dinero($cotizacion->total) }})</div>
+            <div class="notice-text">
+                Se cobra con los precios de hoy.
+                {{ (float) $cotizacion->descuentoTotal > 0 ? 'Trae descuento: al cobrar pide autorización.' : '' }}
+                {{ $cotizacion->estaVigente() ? '' : 'Ojo: su vigencia terminó el ' . $cotizacion->vigencia?->format('d/m/Y') . '.' }}
+            </div>
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="mb-4">@include('partials.errores')</div>
     @endif
@@ -74,6 +107,9 @@
           data-efectivo="{{ $idEfectivo }}">
         @csrf
         <div id="camposOcultos"></div>
+        @if ($cotizacion)
+            <input type="hidden" name="cotizacion" value="{{ $cotizacion->idPedido }}">
+        @endif
 
         <div class="row g-4 align-items-start">
             <div class="col-xl-8 d-flex flex-column gap-4">
@@ -170,7 +206,7 @@
                             <div class="d-flex gap-2 mt-2">
                                 <div class="input-group">
                                     <input type="number" id="descuento" min="0" max="100" step="0.01" inputmode="decimal"
-                                           value="{{ old('descuento') ? old('descuento') : '' }}" class="form-control input-app" placeholder="0">
+                                           value="{{ $descuentoAnterior ?: '' }}" class="form-control input-app" placeholder="0">
                                     <span class="input-group-text input-suffix">%</span>
                                 </div>
                                 <button type="button" class="btn-app btn-app-outline text-nowrap" id="aplicarDescuento">Aplicar</button>
@@ -252,8 +288,18 @@
                         </div>
 
                         <div class="d-flex flex-column gap-2">
-                            <button type="submit" class="btn-app btn-app-primary w-100" id="botonRegistrar" disabled @disabled(!$turno)>Cobrar venta</button>
-                            <p class="field-help text-center m-0 mt-1">Al cobrar se descuenta el inventario y se imprime el ticket.</p>
+                            <button type="submit" class="btn-app btn-app-primary w-100" id="botonRegistrar" disabled>Cobrar venta</button>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonMostrarCotizacion" disabled
+                                        formaction="{{ route('cajero.ventas.cotizacion.vista') }}" formtarget="marcoImpresion">
+                                    Mostrar cotización
+                                </button>
+                                <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonConvertirCotizacion" disabled
+                                        formaction="{{ route('cajero.ventas.cotizacion.store') }}">
+                                    Convertir a cotización
+                                </button>
+                            </div>
+                            <p class="field-help text-center m-0 mt-1">Al cobrar se descuenta el inventario y se imprime el ticket. Una cotización no lo toca.</p>
                         </div>
                     </div>
                 </section>

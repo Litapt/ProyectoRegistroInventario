@@ -12,8 +12,12 @@ use App\Http\Controllers\Administrador\UsuarioController;
 use App\Http\Controllers\Administrador\VentaController;
 use App\Http\Controllers\Almacenista\InicioController as InicioAlmacenista;
 use App\Http\Controllers\Cajero\ClienteController as ClienteCajero;
+use App\Http\Controllers\Cajero\CorteController as CorteCajero;
+use App\Http\Controllers\Cajero\DevolucionController as DevolucionCajero;
+use App\Http\Controllers\Cajero\VentaController as VentaCajero;
 use App\Http\Controllers\Cajero\InicioController as InicioCajero;
 use App\Http\Controllers\Cajero\PedidoController as PedidoCajero;
+use App\Http\Controllers\Cajero\ProductoController as ProductoCajero;
 use App\Http\Controllers\Cajero\TurnoController as TurnoCajero;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Perfil\PerfilController;
@@ -88,6 +92,9 @@ $pantallasConMenuLateral = function () {
     });
     Route::get('/ventas/consultar', [VentaController::class, 'consultar'])
         ->middleware('permiso:ventas.consultar')->name('ventas.consultar');
+    // Imprimir mis ventas del día (para el corte; lo autoriza un gerente o administrador)
+    Route::post('/ventas/del-dia', [VentaController::class, 'ventasDelDia'])
+        ->middleware('permiso:ventas.consultar')->name('ventas.delDia');
     Route::post('/ventas/{venta}/abono', [VentaController::class, 'abonar'])
         ->middleware('permiso:pagos.registrar')->name('ventas.abono');
     Route::get('/ventas/cotizaciones', [VentaController::class, 'cotizaciones'])
@@ -172,7 +179,9 @@ Route::middleware('rol:' . Trabajador::ROL_GERENTE)
 /*
     Pantallas con barra superior (sin menú lateral). Para vender o cobrar pedidos
     primero abre su turno de caja (middleware "turno"). Sólo hace pagos directos:
-    descuentos, saldo pendiente y cancelaciones los autoriza un gerente o administrador.
+    descuentos, saldo pendiente, abonos, devoluciones y cancelaciones los autoriza un gerente
+    o administrador. Algunas rutas se llaman igual que las del administrador (cajero.ventas.abono...)
+    para reusar sus ventanas (App\Support\Ruta).
 */
 Route::middleware('rol:' . Trabajador::ROL_CAJERO)
     ->prefix('cajero')->name('cajero.')
@@ -183,6 +192,21 @@ Route::middleware('rol:' . Trabajador::ROL_CAJERO)
 
         Route::middleware('turno')->group(function () {
             Route::post('/ventas', [InicioCajero::class, 'store'])->name('ventas.store');
+
+            // Corte de caja: cuenta, compara con lo esperado y cierra el turno
+            Route::get('/corte', [CorteCajero::class, 'index'])->name('corte.index');
+            Route::post('/corte', [CorteCajero::class, 'store'])->name('corte.store');
+
+            // Ventas: consultar, abonar (con autorización), devolución y cancelar (con autorización)
+            Route::get('/ventas', [VentaCajero::class, 'consultar'])->name('ventas.consultar');
+            Route::post('/ventas/{venta}/abono', [VentaCajero::class, 'abonar'])->name('ventas.abono');
+            Route::post('/ventas/{venta}/devolucion', [DevolucionCajero::class, 'store'])->name('ventas.devolucion');
+            Route::patch('/ventas/{venta}/cancelar', [VentaCajero::class, 'cancelar'])->name('ventas.cancelar');
+
+            // Cotizaciones (sin permiso; con descuento, con autorización)
+            Route::get('/cotizaciones', [VentaCajero::class, 'cotizaciones'])->name('ventas.cotizaciones');
+            Route::post('/cotizaciones', [VentaCajero::class, 'guardarCotizacion'])->name('ventas.cotizacion.store');
+            Route::post('/cotizaciones/vista', [VentaCajero::class, 'vistaCotizacion'])->name('ventas.cotizacion.vista');
 
             // Pedidos que arman los vendedores: ver, editar antes de cobrar, cobrar o cancelar
             Route::get('/pedidos', [PedidoCajero::class, 'index'])->name('pedidos.index');
@@ -197,8 +221,17 @@ Route::middleware('rol:' . Trabajador::ROL_CAJERO)
             Route::post('/clientes', [ClienteCajero::class, 'store'])->name('clientes.store');
         });
 
+        // Imprimir mis ventas del día (con autorización; no necesita turno abierto)
+        Route::post('/ventas/del-dia', [VentaCajero::class, 'ventasDelDia'])->name('ventas.delDia');
+
+        // Consultar productos (sólo ver; la ventana lo pide sin salir de la pantalla)
+        Route::get('/productos', [ProductoCajero::class, 'consultar'])->name('productos.consultar');
+
         // Reimprimir (no necesitan turno abierto)
+        Route::get('/cortes/{turno}', [CorteCajero::class, 'comprobante'])->name('corte.comprobante');
         Route::get('/ventas/{venta}/ticket', [PedidoCajero::class, 'ticket'])->name('ventas.ticket');
+        Route::get('/ventas/devoluciones/{solicitud}/comprobante', [DevolucionCajero::class, 'comprobante'])->name('ventas.devolucion.comprobante');
+        Route::get('/cotizaciones/{pedido}', [VentaCajero::class, 'cotizacion'])->name('ventas.cotizacion');
         Route::get('/pedidos/{pedido}/cancelacion', [PedidoCajero::class, 'comprobanteCancelacion'])->name('pedidos.cancelacion');
     });
 

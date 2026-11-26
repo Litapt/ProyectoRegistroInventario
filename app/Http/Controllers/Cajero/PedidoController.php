@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cajero;
 
 use App\Http\Controllers\Administrador\VentaController;
 use App\Http\Controllers\Controller;
+use App\Models\Bitacora;
 use App\Models\MetodoPago;
 use App\Models\Motivo;
 use App\Models\Pedido;
@@ -56,7 +57,20 @@ class PedidoController extends Controller
             })
             ->when($filtros['trabajador'] > 0, fn ($q) => $q->where('fk_idTrabajador', $filtros['trabajador']));
 
-        $totales = collect(self::VISTAS)->map(fn ($estado) => (clone $consulta)->where('estadoPedido', $estado)->count());
+        /*
+            Los pendientes los ve cualquier cajero (alguien los tiene que cobrar);
+            los cobrados y cancelados, sólo los que cobró o canceló él.
+        */
+        $yo = $request->user()->idTrabajador;
+        $cancelados = Bitacora::where('tabla', 'pedidos')->where('accion', 'CANCELAR')->where('fk_idTrabajador', $yo)->select('idRegistro');
+        $suyos = fn ($q, $estado) => match ($estado) {
+            Pedido::CONVERTIDA => $q->whereHas('venta', fn ($v) => $v->where('fk_idTrabajador', $yo)),
+            Pedido::CANCELADO => $q->whereIn('idPedido', $cancelados),
+            default => $q,
+        };
+
+        $totales = collect(self::VISTAS)->map(fn ($estado) => $suyos((clone $consulta)->where('estadoPedido', $estado), $estado)->count());
+        $consulta = $suyos($consulta, self::VISTAS[$vista]);
 
         $pedidos = $consulta->where('estadoPedido', self::VISTAS[$vista])
             ->with(['cliente', 'trabajador.rol', 'detalles.producto', 'venta'])
@@ -236,20 +250,24 @@ class PedidoController extends Controller
     }
 
     /* Ticket de la venta (se imprime sin abrir otra pestaña) */
-    public function ticket(Venta $venta): View
+    public function ticket(Request $request, Venta $venta): View
     {
+        \App\Http\Controllers\Cajero\VentaController::revisarQueSeaSuya($venta, $request);
         $venta->load(['detalles.producto', 'pagos.metodo', 'cliente', 'trabajador', 'motivoDeCancelacion']);
 
         return view('compartido.ticketVenta', ['venta' => $venta, 'tienda' => Tienda::datos()]);
     }
 
     /* Comprobante de un pedido cancelado (Figma: "Cajero - Re Impresión Cancelación") */
-    public function comprobanteCancelacion(Pedido $pedido): View
+    public function comprobanteCancelacion(Request $request, Pedido $pedido): View
     {
         abort_unless($pedido->tipoPedido === Pedido::PEDIDO && $pedido->estadoPedido === Pedido::CANCELADO, 404);
+        // Sólo los que canceló él
+        abort_unless(Bitacora::where('tabla', 'pedidos')->where('accion', 'CANCELAR')->where('idRegistro', $pedido->idPedido)
+            ->where('fk_idTrabajador', $request->user()->idTrabajador)->exists(), 404);
         $pedido->load(['detalles.producto', 'cliente', 'trabajador']);
 
-        $registro = \App\Models\Bitacora::where('tabla', 'pedidos')->where('idRegistro', $pedido->idPedido)
+        $registro = Bitacora::where('tabla', 'pedidos')->where('idRegistro', $pedido->idPedido)
             ->where('accion', 'CANCELAR')->latest('idBitacora')->first();
 
         return view('cajero.pedidos.cancelacion', [

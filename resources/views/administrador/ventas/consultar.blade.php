@@ -21,9 +21,14 @@
         $dinero = fn ($n) => \App\Models\Producto::formatoPrecio($n);
     @endphp
 
-    <div class="mb-3">
-        <h1 class="page-heading m-0">Ventas</h1>
-        <p class="page-description m-0 mt-1">Consulta y administra las ventas de tu refaccionaria.</p>
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="page-heading m-0">Ventas</h1>
+            <p class="page-description m-0 mt-1">Consulta y administra las ventas de tu refaccionaria.</p>
+        </div>
+        <button type="button" class="btn-app btn-app-outline" data-bs-toggle="modal" data-bs-target="#modalVentasDelDia">
+            Imprimir mis ventas del día
+        </button>
     </div>
 
     @include('administrador.ventas.pestanas', ['activa' => 'consultar'])
@@ -103,11 +108,7 @@
                 <div class="col-12 d-flex flex-wrap align-items-end justify-content-end gap-3">
                     <button type="button" class="btn-text" id="filtroHoy">Sólo hoy</button>
                     @if ($hayFiltros)
-<<<<<<< HEAD
                         <a href="{{ \App\Support\Ruta::a('ventas.consultar', array_filter(['ver' => request('ver'), 'saldo' => $soloConSaldo ? 1 : null])) }}" class="btn-app btn-app-soft">Limpiar filtros</a>
-=======
-                        <a href="{{ \App\Support\Ruta::a('ventas.consultar', $verCanceladas ? ['ver' => 'canceladas'] : []) }}" class="btn-app btn-app-soft">Limpiar filtros</a>
->>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
                     @endif
                     <button type="submit" class="btn-app btn-app-primary">{{ $verDevoluciones ? 'Buscar devoluciones' : 'Buscar ventas' }}</button>
                 </div>
@@ -146,20 +147,7 @@
                 @elseif (!$verCanceladas)
                     <span class="panel-text">Vendido: <strong class="text-dark">{{ $dinero($totalVendido) }}</strong></span>
                 @endif
-<<<<<<< HEAD
             </div>
-=======
-                {{ number_format($ventas->total()) }} {{ $ventas->total() === 1 ? 'venta' : 'ventas' }}{{ $hayFiltros ? ' con estos filtros' : '' }}
-            </span>
-            <span class="panel-text d-flex flex-wrap align-items-center gap-2">
-                @if ($verCanceladas)
-                    <a href="{{ \App\Support\Ruta::a('ventas.consultar', $otrosFiltros) }}" class="btn-text">Ver completadas</a>
-                @else
-                    Vendido: <strong class="text-dark">{{ $dinero($totalVendido) }}</strong> ·
-                    <a href="{{ \App\Support\Ruta::a('ventas.consultar', $otrosFiltros + ['ver' => 'canceladas']) }}" class="btn-text">Ver canceladas ({{ $totalCanceladas }})</a>
-                @endif
-            </span>
->>>>>>> 4362f1a976551bded5b9cae63478669ab580650f
         </div>
 
         @if ($verDevoluciones)
@@ -358,6 +346,7 @@
 @endsection
 
 @push('modales')
+    @include('compartido.modalVentasDelDia')
     @include('administrador.ventas.modalDetalleVenta')
     @if ($puedeEditar)
         @include('administrador.ventas.modalEditarVenta')
@@ -374,5 +363,6 @@
 @push('scripts')
     <script src="{{ asset('javascript/imprimir.js') }}"></script>
     <script src="{{ asset('javascript/administrador/consultarVentas.js') }}"></script>
+    <script src="{{ asset('javascript/ventasDelDia.js') }}"></script>
     <script src="{{ asset('javascript/administrador/editarVenta.js') }}"></script>
 @endpush

@@ -60,3 +60,35 @@
   font-size: 22px;
   font-weight: 700;
 }
+
+/* ---------- Corte de caja ---------- */
+.conteo-corte {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.conteo-corte-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.conteo-corte-item .conteo-piezas { width: 80px; }
+.conteo-corte-item .conteo-importe { text-align: left; }
+
+.resumen-corte {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--c-primary-soft);
+}
+
+.resumen-corte-valor { font-size: 22px; font-weight: 700; color: var(--c-dark); }
+.resumen-corte-bien { background: #ECFDF5; }
+.resumen-corte-bien .resumen-corte-valor { color: #047857; }
+.resumen-corte-mal { background: var(--c-danger-soft); }
+.resumen-corte-mal .resumen-corte-valor { color: var(--c-danger); }
