@@ -41,6 +41,11 @@ class DevolucionVenta
                 throw ValidationException::withMessages(['devolucion' => 'Esa venta está cancelada: no se le pueden hacer devoluciones.']);
             }
 
+            if ($venta->tieneSaldo()) {
+                throw ValidationException::withMessages(['devolucion' => "La venta {$venta->folio} todavía tiene saldo pendiente ("
+                    . Producto::formatoPrecio($venta->saldo()) . '). Para devolver, primero que liquide, o edita la venta.']);
+            }
+
             $renglon = $venta->detalles()->where('fk_idProducto', $idProducto)->first();
             if (!$renglon) {
                 throw ValidationException::withMessages(['devolucion' => 'Ese producto no está en la venta.']);

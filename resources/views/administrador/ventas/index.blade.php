@@ -29,14 +29,44 @@
 
     @include('administrador.ventas.pestanas', ['activa' => 'registrar'])
 
+    @if ($cotizacionGuardada)
+        <div class="notice notice-ok d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <div class="notice-title">Cotización {{ $cotizacionGuardada->folio }} · {{ \App\Models\Producto::formatoPrecio($cotizacionGuardada->total) }}</div>
+                <div class="notice-text">{{ $cotizacionGuardada->cliente?->nombre() ?? 'Público en general' }} · válida hasta el {{ $cotizacionGuardada->vigencia->format('d/m/Y') }}</div>
+            </div>
+            <a href="{{ \App\Support\Ruta::a('ventas.cotizacion', $cotizacionGuardada) }}" class="btn-app btn-app-outline" data-imprimir>
+                Imprimir cotización
+            </a>
+        </div>
+    @endif
+
+    @if ($cotizacion)
+        <div class="notice notice-warning d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <div class="notice-title">Cobrando la cotización {{ $cotizacion->folio }} (cotizada en {{ \App\Models\Producto::formatoPrecio($cotizacion->total) }})</div>
+                <div class="notice-text">
+                    Ya están sus productos, el cliente y el descuento. Los precios son los de hoy: revisa el total antes de registrar.
+                    {{ $cotizacion->estaVigente() ? '' : 'Ojo: su vigencia terminó el ' . $cotizacion->vigencia?->format('d/m/Y') . '.' }}
+                </div>
+            </div>
+            <a href="{{ \App\Support\Ruta::a('ventas.index') }}" class="btn-text">Empezar una venta nueva</a>
+        </div>
+    @endif
+
     @if ($ventaRegistrada)
         <div class="notice notice-ok d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
             <div>
                 <div class="notice-title">Venta {{ $ventaRegistrada->folio }} · {{ \App\Models\Producto::formatoPrecio($ventaRegistrada->total) }}</div>
-                <div class="notice-text">{{ $ventaRegistrada->nombreCliente() }} · {{ $ventaRegistrada->fechaVenta->format('d/m/Y h:i a') }}</div>
+                <div class="notice-text">
+                    {{ $ventaRegistrada->nombreCliente() }} · {{ $ventaRegistrada->fechaVenta->format('d/m/Y h:i a') }}
+                    @if ($ventaRegistrada->tieneSaldo())
+                        · Pagó {{ \App\Models\Producto::formatoPrecio($ventaRegistrada->pagado()) }}, debe <strong>{{ \App\Models\Producto::formatoPrecio($ventaRegistrada->saldo()) }}</strong>
+                    @endif
+                </div>
             </div>
             {{-- Imprime directo, sin abrir otra pestaña (javascript/imprimir.js). El enlace es por si falla. --}}
-            <a href="{{ route('administrador.ventas.ticket', $ventaRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
+            <a href="{{ \App\Support\Ruta::a('ventas.ticket', $ventaRegistrada) }}" class="btn-app btn-app-outline" data-imprimir>
                 Imprimir ticket
             </a>
         </div>
@@ -46,10 +76,10 @@
         <div class="mb-4">@include('partials.errores')</div>
     @endif
 
-    <form method="post" action="{{ route('administrador.ventas.store') }}" id="formVenta" novalidate
-          data-buscar-clientes="{{ route('administrador.ventas.buscarClientes') }}"
-          data-buscar-productos="{{ route('administrador.ventas.buscarProductos') }}"
-          data-registrar-cliente="{{ $puedeRegistrarCliente ? route('administrador.clientes.store') : '' }}"
+    <form method="post" action="{{ \App\Support\Ruta::a('ventas.store') }}" id="formVenta" novalidate
+          data-buscar-clientes="{{ \App\Support\Ruta::a('ventas.buscarClientes') }}"
+          data-buscar-productos="{{ \App\Support\Ruta::a('ventas.buscarProductos') }}"
+          data-registrar-cliente="{{ $puedeRegistrarCliente ? \App\Support\Ruta::a('clientes.store') : '' }}"
           data-carrito="{{ json_encode($carritoAnterior) }}"
           data-cliente="{{ json_encode($clienteAnterior) }}"
           data-iva="{{ $iva }}"
@@ -57,6 +87,9 @@
         @csrf
         {{-- ventas.js llena aquí los campos ocultos (cliente, productos, descuento, total) --}}
         <div id="camposOcultos"></div>
+        @if ($cotizacion)
+            <input type="hidden" name="cotizacion" value="{{ $cotizacion->idPedido }}">
+        @endif
 
         <div class="row g-4 align-items-start">
             <div class="col-xl-8 d-flex flex-column gap-4">
@@ -155,7 +188,7 @@
                             <div class="d-flex gap-2 mt-2">
                                 <div class="input-group">
                                     <input type="number" id="descuento" min="0" max="100" step="0.01" inputmode="decimal"
-                                           value="{{ old('descuento', '') }}" class="form-control input-app" placeholder="0">
+                                           value="{{ $descuentoAnterior ?? '' }}" class="form-control input-app" placeholder="0">
                                     <span class="input-group-text input-suffix">%</span>
                                 </div>
                                 <button type="button" class="btn-app btn-app-outline text-nowrap" id="aplicarDescuento">Aplicar</button>
@@ -183,16 +216,43 @@
                             </select>
                         </div>
 
+                        {{-- Pagar todo o dejar saldo pendiente (sólo con cliente registrado) --}}
+                        @php
+                            $condicion = old('condicion', 'CONTADO');
+                        @endphp
+                        <div class="d-flex flex-column gap-2" id="bloqueCondicion">
+                            <label class="config-opcion m-0">
+                                <input type="radio" name="condicionPago" value="CONTADO" @checked($condicion !== 'CREDITO')>
+                                <span><span class="fw-semibold text-dark">Paga todo ahora</span></span>
+                            </label>
+                            <label class="config-opcion m-0" id="opcionCredito">
+                                <input type="radio" name="condicionPago" value="CREDITO" @checked($condicion === 'CREDITO')>
+                                <span>
+                                    <span class="fw-semibold text-dark">Paga una parte</span>
+                                    <span class="field-help d-block" id="ayudaCredito">El resto queda pendiente a cuenta del cliente.</span>
+                                </span>
+                            </label>
+                            <div class="d-none" id="bloquePagoInicial">
+                                <label for="pagoInicial" class="field-label-app">¿Cuánto paga ahora?</label>
+                                <div class="input-group">
+                                    <span class="input-group-text input-prefix">$</span>
+                                    <input type="number" id="pagoInicial" min="0" step="0.01" inputmode="decimal"
+                                           value="{{ old('pagoInicial', '') }}" class="form-control input-app @error('condicion') is-invalid @enderror" placeholder="0.00">
+                                </div>
+                                <p class="field-help m-0 mt-1" id="ayudaPagoInicial"></p>
+                            </div>
+                        </div>
+
                         <div class="d-flex flex-column gap-2">
                             <button type="submit" class="btn-app btn-app-primary w-100" id="botonRegistrar" disabled>Registrar venta</button>
                             <div class="d-flex flex-wrap gap-2">
                                 <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonMostrarCotizacion" disabled
-                                        formaction="{{ route('administrador.ventas.cotizacion.vista') }}" formtarget="_blank">
+                                        formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.vista') }}" formtarget="marcoImpresion">
                                     Mostrar cotización
                                 </button>
                                 @if ($puedeCotizar)
                                     <button type="submit" class="btn-app btn-app-soft flex-fill botones-cotizacion" id="botonConvertirCotizacion" disabled
-                                            formaction="{{ route('administrador.ventas.cotizacion.store') }}">
+                                            formaction="{{ \App\Support\Ruta::a('ventas.cotizacion.store') }}">
                                         Convertir a cotización
                                     </button>
                                 @endif

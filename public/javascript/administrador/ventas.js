@@ -137,10 +137,63 @@
     $('resumenIva').textContent = dinero(c.iva);
     $('resumenTotal').textContent = dinero(c.total);
 
+    pintarPago(c.total);
+
     const vacio = productos === 0;
     $('botonRegistrar').disabled = vacio;
     form.querySelectorAll('.botones-cotizacion').forEach(function (b) { b.disabled = vacio; });
   }
+
+  // ---------- Paga todo o paga una parte (sólo con cliente registrado) ----------
+
+  function esCredito() {
+    const elegido = form.querySelector('input[name=condicionPago]:checked');
+    return !!elegido && elegido.value === 'CREDITO';
+  }
+
+  // Revisa "¿Cuánto paga ahora?": regresa el monto en centavos o null si no vale
+  function pagoInicialValido(totalCentavos) {
+    const texto = $('pagoInicial').value.trim();
+    const valor = texto === '' ? 0 : Number(texto);
+    if (!Number.isFinite(valor) || valor < 0 || Math.abs(valor * 100 - Math.round(valor * 100)) > 1e-6) { return null; }
+    const centavos = Math.round(valor * 100);
+    return centavos < totalCentavos ? centavos : null;
+  }
+
+  function pintarPago(totalCentavos) {
+    if (totalCentavos === undefined) { totalCentavos = calcular().total; }
+    const hayCliente = !!estado.cliente;
+    const credito = $('opcionCredito').querySelector('input');
+    credito.disabled = !hayCliente;
+    $('opcionCredito').classList.toggle('is-disabled', !hayCliente);
+    $('ayudaCredito').textContent = hayCliente
+      ? 'El resto queda pendiente a cuenta de ' + estado.cliente.nombre + '.'
+      : 'Elige un cliente registrado para poder dejar saldo pendiente.';
+    if (!hayCliente && credito.checked) {
+      form.querySelector('input[name=condicionPago][value=CONTADO]').checked = true;
+    }
+
+    const mostrar = esCredito();
+    $('bloquePagoInicial').classList.toggle('d-none', !mostrar);
+    if (!mostrar) { return; }
+
+    const pago = pagoInicialValido(totalCentavos);
+    const ayuda = $('ayudaPagoInicial');
+    $('pagoInicial').classList.toggle('is-invalid', pago === null);
+    if (pago === null) {
+      ayuda.textContent = 'Debe ser menos que el total (' + dinero(totalCentavos) + '). Si paga todo, elige «Paga todo ahora».';
+      ayuda.className = 'field-help m-0 mt-1 text-danger';
+    } else {
+      ayuda.textContent = 'Queda pendiente: ' + dinero(totalCentavos - pago) + (pago === 0 ? ' (no deja anticipo).' : '.');
+      ayuda.className = 'field-help m-0 mt-1 saldo-pendiente';
+    }
+  }
+
+  form.querySelectorAll('input[name=condicionPago]').forEach(function (r) {
+    r.addEventListener('change', function () { pintarPago(); if (esCredito()) { $('pagoInicial').focus(); } });
+  });
+  $('pagoInicial').addEventListener('input', function () { pintarPago(); });
+  $('pagoInicial').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); } });
 
   function pintarCliente() {
     const hay = !!estado.cliente;
@@ -152,6 +205,7 @@
       $('clienteElegidoNombre').textContent = estado.cliente.nombre;
       $('clienteElegidoDetalle').textContent = estado.cliente.codigo + ' · ' + estado.cliente.telefono;
     }
+    pintarPago();
   }
 
   // ---------- Cambios en la lista ----------
@@ -367,11 +421,26 @@
       campos.appendChild(oculto('productos[' + i + '][cantidad]', p.cantidad));
     });
     campos.appendChild(oculto('descuento', estado.descuento));
+
+    // Pago: todo o una parte. "Mostrar cotización" no lo necesita.
+    const credito = esCredito();
+    const quien = e.submitter;
+    const esCobro = !quien || (!quien.getAttribute('formtarget') && !quien.getAttribute('formaction'));
+    if (credito && esCobro) {
+      const pago = pagoInicialValido(calcular().total);
+      if (pago === null) {
+        e.preventDefault();
+        $('pagoInicial').focus();
+        return;
+      }
+      campos.appendChild(oculto('pagoInicial', (pago / 100).toFixed(2)));
+    }
+    campos.appendChild(oculto('condicion', credito ? 'CREDITO' : 'CONTADO'));
     campos.appendChild(oculto('totalEsperado', (calcular().total / 100).toFixed(2)));
 
-    // "Mostrar cotización" se abre en otra pestaña: esta sigue igual
+    // "Mostrar cotización" se imprime en un marco invisible (javascript/imprimir.js): esta página sigue igual
     const boton = e.submitter;
-    if (boton && boton.getAttribute('formtarget') !== '_blank') {
+    if (boton && !boton.getAttribute('formtarget')) {
       form.querySelectorAll('button[type=submit]').forEach(function (b) { b.disabled = true; });
       boton.textContent = 'Guardando…';
     }

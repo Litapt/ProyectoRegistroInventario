@@ -216,11 +216,43 @@ class Venta extends Model
                 'precio' => Producto::formatoPrecio($d->precioUnitarioVenta),
                 'importe' => Producto::formatoPrecio($d->subtotal),
             ])->all(),
+            'pagos' => $this->pagos->map(fn ($p) => [
+                'fecha' => $p->fechaPago?->format('d/m/Y h:i a'),
+                'metodo' => $p->metodo?->nombre,
+                'monto' => Producto::formatoPrecio($p->monto),
+            ])->all(),
+            'credito' => $this->esCredito(),
+            'pagado' => Producto::formatoPrecio($this->pagado()),
+            'saldo' => $this->saldo() >= 0.01 ? Producto::formatoPrecio($this->saldo()) : null,
             'subtotal' => Producto::formatoPrecio($this->subtotal),
             'descuento' => (float) $this->descuentoTotal > 0 ? '−' . Producto::formatoPrecio($this->descuentoTotal) : null,
             'iva' => Producto::formatoPrecio($this->impuestosTotal),
             'total' => Producto::formatoPrecio($this->total),
         ];
+    }
+
+    // ---------- Pagos (contado o crédito con abonos) ----------
+
+    public function esCredito(): bool
+    {
+        return $this->condicionPago === self::CREDITO;
+    }
+
+    /* Lo que ya pagó el cliente (suma de pagosVenta) */
+    public function pagado(): float
+    {
+        return round((float) ($this->relationLoaded('pagos') ? $this->pagos->sum('monto') : $this->pagos()->sum('monto')), 2);
+    }
+
+    /* Lo que todavía debe (0 si ya liquidó) */
+    public function saldo(): float
+    {
+        return max(0.0, round((float) $this->total - $this->pagado(), 2));
+    }
+
+    public function tieneSaldo(): bool
+    {
+        return !$this->estaCancelada() && $this->saldo() >= 0.01;
     }
 
     public function nombreCliente(): string

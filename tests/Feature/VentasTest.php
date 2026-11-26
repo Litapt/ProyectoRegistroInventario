@@ -259,8 +259,10 @@ test('mostrar cotización no guarda nada ni toca el inventario', function () {
 });
 
 test('convertir a cotización la guarda con folio y vigencia, sin tocar el inventario', function () {
+    // Se queda en Ventas con el aviso para imprimirla (no cambia de página)
     $this->actingAs($this->admin)->post(route('administrador.ventas.cotizacion.store'), carritoFigma($this))
-        ->assertRedirect();
+        ->assertRedirect(route('administrador.ventas.index'))
+        ->assertSessionHas('cotizacionGuardada');
 
     $cotizacion = Pedido::with('detalles')->first();
     expect($cotizacion->tipoPedido)->toBe(Pedido::COTIZACION)
@@ -271,6 +273,8 @@ test('convertir a cotización la guarda con folio y vigencia, sin tocar el inven
         ->and($this->bujia->refresh()->existencia)->toBe(4)
         ->and(Venta::count())->toBe(0);
 
+    $this->actingAs($this->admin)->get(route('administrador.ventas.index'))
+        ->assertSee('Imprimir cotización')->assertSee(route('administrador.ventas.cotizacion', $cotizacion), false);
     $this->actingAs($this->admin)->get(route('administrador.ventas.cotizacion', $cotizacion))
         ->assertOk()->assertSee($cotizacion->folio)->assertSee('$2,180.80');
 });

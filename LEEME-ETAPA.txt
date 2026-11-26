@@ -1,9 +1,12 @@
-ETAPA 00 · Proyecto base (SÓLO si tu repositorio todavía no tiene el proyecto de Laravel)
-=======================================================================================
-Qué trae: el proyecto Laravel desde cero (inicio de sesión, tablas de la refaccionaria,
-pantallas de bienvenida de cada rol) y los archivos de Laravel que se repararon.
+ETAPA 03 · Cotizaciones y crédito
+=================================
+Qué trae (partes 10b, 10c y 10d):
+  - Convertir a cotización sin cambiar de página
+  - Pestaña "Cotizaciones" (imprimir y cobrar las guardadas)
+  - Pagar una parte (crédito) y abonos
+  - Consultar ventas separado en Realizadas · Con saldo · Devoluciones · Canceladas
 
-Si tu git YA tiene esto (el login y las tablas), sáltate esta etapa.
+Migraciones nuevas: NO
 
 Mensaje para el commit:
-    Proyecto base: Laravel, inicio de sesión y tablas de la refaccionaria
+    Ventas: cotizaciones guardadas, pago a crédito con abonos y listas separadas

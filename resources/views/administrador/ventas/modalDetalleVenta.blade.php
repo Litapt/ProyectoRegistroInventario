@@ -40,6 +40,12 @@
                     </table>
                 </div>
 
+                <div class="d-none" id="detallePagos">
+                    <h3 class="panel-title m-0 mb-2">Pagos</h3>
+                    <div class="d-flex flex-column gap-1 small" id="detallePagosLista"></div>
+                    <div class="mt-2 fw-semibold" id="detalleSaldo"></div>
+                </div>
+
                 <div class="d-none" id="detalleDevoluciones">
                     <h3 class="panel-title m-0 mb-2">Devoluciones</h3>
                     <div class="d-flex flex-column gap-2" id="detalleDevolucionesLista"></div>

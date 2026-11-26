@@ -64,8 +64,14 @@
         <tr><td>IVA</td><td class="derecha">{{ $dinero($venta->impuestosTotal) }}</td></tr>
         <tr class="total"><td>TOTAL</td><td class="derecha">{{ $dinero($venta->total) }}</td></tr>
         @foreach ($venta->pagos as $pago)
-            <tr><td class="tenue">Pago · {{ $pago->metodo?->nombre }}</td><td class="derecha tenue">{{ $dinero($pago->monto) }}</td></tr>
+            <tr>
+                <td class="tenue">{{ $pago->observaciones === 'Abono' ? 'Abono ' . $pago->fechaPago?->format('d/m') : 'Pago' }} · {{ $pago->metodo?->nombre }}</td>
+                <td class="derecha tenue">{{ $dinero($pago->monto) }}</td>
+            </tr>
         @endforeach
+        @if ($venta->esCredito())
+            <tr class="total"><td>{{ $venta->tieneSaldo() ? 'SALDO PENDIENTE' : 'LIQUIDADA' }}</td><td class="derecha">{{ $venta->tieneSaldo() ? $dinero($venta->saldo()) : '' }}</td></tr>
+        @endif
     </table>
 
     <hr class="linea">

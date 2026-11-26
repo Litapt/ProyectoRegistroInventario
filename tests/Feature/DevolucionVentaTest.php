@@ -153,3 +153,30 @@ test('otros roles no registran devoluciones del administrador', function () {
         ->assertRedirect(route('gerente.inicio'));
     expect(Solicitud::count())->toBe(0);
 });
+
+test('las devoluciones tienen su propia lista en Consultar, separadas de las ventas', function () {
+    $this->post(route('administrador.ventas.devolucion', $this->venta), devolver($this));
+    $this->post(route('administrador.ventas.devolucion', $this->venta), devolver($this, [
+        'producto' => $this->balatas->idProducto, 'motivo' => $this->danado, 'regresaInventario' => '0',
+    ]));
+    [$primera, $segunda] = Solicitud::where('tipoSolicitud', Solicitud::DEVOLUCION)->orderBy('idSolicitud')->get()->all();
+    $this->get(route('administrador.ventas.index'));   // se "come" el aviso verde
+
+    // Realizadas: la venta sí, las devoluciones no (sólo una liga "Con devolución")
+    $this->get(route('administrador.ventas.consultar'))
+        ->assertSee($this->venta->folio)->assertSee('Devoluciones (2)')
+        ->assertDontSee('>' . $primera->folio . '<', false)->assertDontSee('>' . $segunda->folio . '<', false)->assertDontSee('Reembolsado:');
+
+    // Devoluciones: cada una con su venta, producto, reembolso y si regresó al inventario
+    $this->get(route('administrador.ventas.consultar', ['ver' => 'devoluciones']))
+        ->assertOk()
+        ->assertSee($primera->folio)->assertSee($segunda->folio)->assertSee($this->venta->folio)
+        ->assertSee('1 × Filtro de aceite')->assertSee('1 × Balatas delanteras')
+        ->assertSee('Regresó')->assertSee('Dañada')
+        ->assertSee('Reembolsado:')
+        ->assertSee(route('administrador.ventas.devolucion.comprobante', $primera), false);
+
+    // Los filtros también sirven aquí (por folio de devolución)
+    $this->get(route('administrador.ventas.consultar', ['ver' => 'devoluciones', 'folio' => $segunda->folio]))
+        ->assertSee($segunda->folio)->assertDontSee($primera->folio);
+});

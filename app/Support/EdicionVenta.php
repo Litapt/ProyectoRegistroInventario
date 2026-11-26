@@ -279,11 +279,19 @@ class EdicionVenta
         $venta->total = $cuentas['total'];
         $venta->save();
 
-        // El pago se ajusta al nuevo total (una venta de contado tiene un solo pago)
-        $pago = $venta->pagos()->orderBy('idPagoVenta')->first();
-        if ($pago) {
-            $pago->monto = $cuentas['total'];
-            $pago->save();
+        if ($venta->esCredito()) {
+            // A crédito los pagos no se tocan: cambia lo que debe. No puede quedar debajo de lo ya pagado.
+            if ($cuentas['total'] - $venta->pagado() <= -0.005) {
+                throw ValidationException::withMessages(['editar' => 'El nuevo total (' . Producto::formatoPrecio($cuentas['total'])
+                    . ') es menor a lo que el cliente ya pagó (' . Producto::formatoPrecio($venta->pagado()) . ').']);
+            }
+        } else {
+            // De contado: el pago se ajusta al nuevo total (tiene un solo pago)
+            $pago = $venta->pagos()->orderBy('idPagoVenta')->first();
+            if ($pago) {
+                $pago->monto = $cuentas['total'];
+                $pago->save();
+            }
         }
 
         $solicitud->estado = Solicitud::APROBADA;

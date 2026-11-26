@@ -10,6 +10,7 @@ use App\Models\Motivo;
 use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\Trabajador;
+use App\Models\Solicitud;
 use App\Models\Venta;
 use App\Support\Autorizacion;
 use App\Support\RegistroVenta;
@@ -28,25 +29,49 @@ use Illuminate\View\View;
 class VentaController extends Controller
 {
     /* Pestaña "Registrar venta" */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $ventaRegistrada = session('ventaRegistrada') ? Venta::find(session('ventaRegistrada')) : null;
-        $clienteAnterior = old('cliente') ? Cliente::activos()->find(old('cliente')) : null;
+        $ventaRegistrada = session('ventaRegistrada') ? Venta::with('pagos')->find(session('ventaRegistrada')) : null;
+        $cotizacionGuardada = session('cotizacionGuardada') ? Pedido::with('cliente')->find(session('cotizacionGuardada')) : null;
+
+        // "Cobrar" una cotización guardada: se arma la venta con sus productos, cliente y descuento
+        $cotizacion = null;
+        $productos = old('productos');
+        $idCliente = old('cliente');
+        $descuento = old('descuento');
+        $idCotizacion = old('cotizacion', $request->query('cotizacion'));
+        if ($idCotizacion) {
+            $cotizacion = Pedido::with('detalles')->where('tipoPedido', Pedido::COTIZACION)
+                ->where('estadoPedido', Pedido::PENDIENTE)->find((int) $idCotizacion);
+            if ($cotizacion && !old('productos')) {
+                $productos = $cotizacion->detalles->map(fn ($d) => ['id' => $d->fk_idProducto, 'cantidad' => $d->cantidad])->all();
+                $idCliente = $cotizacion->fk_idCliente;
+                $descuento = $cotizacion->porcentajeDescuento() ?: null;
+            }
+        }
+        $clienteAnterior = $idCliente ? Cliente::activos()->find($idCliente) : null;
 
         return view('administrador.ventas.index', [
             'metodosPago' => MetodoPago::activos()->get(),
             'iva' => (float) Configuracion::valor('iva', '16'),
-            'carritoAnterior' => RegistroVenta::carritoDesde(old('productos')),
+            'carritoAnterior' => RegistroVenta::carritoDesde($productos),
             'clienteAnterior' => $clienteAnterior ? $this->datosCliente($clienteAnterior) : null,
+            'descuentoAnterior' => $descuento,
+            'cotizacion' => $cotizacion,
             'ventaRegistrada' => $ventaRegistrada,
+            'cotizacionGuardada' => $cotizacionGuardada,
         ]);
     }
 
     /* Pestaña "Consultar ventas": filtros combinables */
     public function consultar(Request $request): View
     {
-        // Igual que en Usuarios y Clientes: las canceladas van aparte ("Ver canceladas")
+        // Cuatro listas separadas: realizadas · con saldo · devoluciones · canceladas
         $verCanceladas = $request->query('ver') === 'canceladas';
+        $verDevoluciones = $request->query('ver') === 'devoluciones';
+        $soloConSaldo = !$verCanceladas && !$verDevoluciones && $request->boolean('saldo');
+        // Ventas que todavía deben algo: total > lo pagado
+        $conSaldo = fn ($q) => $q->whereRaw('total - (SELECT COALESCE(SUM(p.monto), 0) FROM pagosVenta p WHERE p.fk_idVenta = ventas.idVenta) >= 0.01');
 
         $filtros = [
             'folio' => mb_substr(trim((string) $request->query('folio', '')), 0, 30),
@@ -73,9 +98,39 @@ class VentaController extends Controller
         // Lo vendido (sin canceladas) y cuántas canceladas hay, con los mismos filtros
         $totalVendido = (clone $consulta)->where('estadoVenta', Venta::COMPLETADA)->sum('total');
         $totalCanceladas = (clone $consulta)->where('estadoVenta', Venta::CANCELADA)->count();
+        $totalConSaldo = $conSaldo((clone $consulta)->where('estadoVenta', Venta::COMPLETADA))->count();
+
+        // Devoluciones: con los mismos filtros (folio de la devolución o de la venta, cliente, quién la registró, fechas)
+        $consultaDevoluciones = Solicitud::query()
+            ->where('tipoSolicitud', Solicitud::DEVOLUCION)->where('estado', Solicitud::APROBADA)
+            ->when($filtros['folio'] !== '', fn ($q) => $q->where(fn ($w) => $w
+                ->where('folio', 'like', '%' . $filtros['folio'] . '%')
+                ->orWhereHas('venta', fn ($v) => $v->where('folio', 'like', '%' . $filtros['folio'] . '%'))))
+            ->when($filtros['cliente'] !== '', function ($q) use ($filtros) {
+                if (in_array(mb_strtolower($filtros['cliente']), ['público', 'publico', 'público en general', 'publico en general'], true)) {
+                    return $q->whereHas('venta', fn ($v) => $v->whereNull('fk_idCliente'));
+                }
+
+                return $q->whereHas('venta.cliente', fn ($c) => $c->buscar($filtros['cliente']));
+            })
+            ->when($filtros['trabajador'] > 0, fn ($q) => $q->where('fk_idTrabajadorSolicitante', $filtros['trabajador']))
+            ->when($filtros['desde'], fn ($q) => $q->where('fechaSolicitud', '>=', $filtros['desde']->copy()->startOfDay()))
+            ->when($filtros['hasta'], fn ($q) => $q->where('fechaSolicitud', '<=', $filtros['hasta']->copy()->endOfDay()));
+        $totalDevoluciones = (clone $consultaDevoluciones)->count();
+
+        $devoluciones = null;
+        $totalReembolsado = 0.0;
+        if ($verDevoluciones) {
+            $totalReembolsado = (float) (clone $consultaDevoluciones)->get()->sum(fn ($d) => $d->reembolso());
+            $devoluciones = $consultaDevoluciones
+                ->with(['venta.cliente', 'producto', 'motivoDe', 'solicitante.rol', 'responsable'])
+                ->orderByDesc('fechaSolicitud')->orderByDesc('idSolicitud')
+                ->paginate(10)->withQueryString();
+        }
 
         $ventas = $consulta
             ->where('estadoVenta', $verCanceladas ? Venta::CANCELADA : Venta::COMPLETADA)
+            ->when($soloConSaldo, $conSaldo)
             ->with(['cliente', 'trabajador.rol', 'pagos.metodo', 'detalles.producto', 'motivoDeCancelacion', 'trabajadorCancelacion', 'solicitudPendiente', 'devoluciones.producto', 'devoluciones.motivoDe'])
             ->orderByDesc('fechaVenta')->orderByDesc('idVenta')
             ->paginate(10)->withQueryString();
@@ -86,6 +141,15 @@ class VentaController extends Controller
             'hayFiltros' => $filtros['folio'] !== '' || $filtros['cliente'] !== '' || $filtros['trabajador'] > 0
                 || $filtros['desde'] || $filtros['hasta'],
             'verCanceladas' => $verCanceladas,
+            'verDevoluciones' => $verDevoluciones,
+            'devoluciones' => $devoluciones,
+            'totalDevoluciones' => $totalDevoluciones,
+            'totalReembolsado' => $totalReembolsado,
+            'soloConSaldo' => $soloConSaldo,
+            'totalConSaldo' => $totalConSaldo,
+            'metodosPago' => MetodoPago::activos()->get(),
+            'ventaAAbonar' => session('modalAbono') ? Venta::with('pagos')->find(session('modalAbono')) : null,
+            'ventaAbonada' => session('ventaAbonada') ? Venta::with('pagos')->find(session('ventaAbonada')) : null,
             'totalCanceladas' => $totalCanceladas,
             'totalVendido' => (float) $totalVendido,
             'trabajadores' => Trabajador::orderBy('nombres')->orderBy('apellidoPaterno')->get(),
@@ -98,10 +162,69 @@ class VentaController extends Controller
         ]);
     }
 
+    /* Ventana "Registrar abono" (ventas a crédito) */
+    public function abonar(Request $request, Venta $venta): RedirectResponse
+    {
+        $volver = redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')));
+
+        try {
+            $datos = validator($request->all(), [
+                'monto' => ['required', 'numeric', 'min:0.01', 'decimal:0,2'],
+                'metodoPago' => ['required', 'integer', Rule::exists('metodosPago', 'idMetodoPago')->where('activo', true)],
+            ], [
+                'monto.required' => 'Escribe cuánto abona.',
+                'monto.numeric' => 'El abono debe ser una cantidad.',
+                'monto.min' => 'El abono debe ser mayor a $0.',
+                'monto.decimal' => 'El abono puede tener hasta 2 decimales.',
+                'metodoPago.required' => 'Elige el método de pago.',
+                'metodoPago.exists' => 'Elige un método de pago de la lista.',
+            ])->validate();
+
+            RegistroVenta::abonar($venta, (float) $datos['monto'], (int) $datos['metodoPago'], $request->user());
+        } catch (ValidationException $e) {
+            return $volver
+                ->withErrors(['abono' => collect($e->errors())->flatten()->all()])
+                ->withInput()
+                ->with('modalAbono', $venta->idVenta);
+        }
+
+        $venta->refresh()->load('pagos');
+
+        return $volver
+            ->with('alerta', ['success', $venta->tieneSaldo()
+                ? "Abono registrado en {$venta->folio}. Todavía debe " . Producto::formatoPrecio($venta->saldo()) . '.'
+                : "Abono registrado: la venta {$venta->folio} quedó liquidada."])
+            ->with('ventaAbonada', $venta->idVenta);
+    }
+
+    /* Pestaña "Cotizaciones": las guardadas con "Convertir a cotización" */
+    public function cotizaciones(Request $request): View
+    {
+        $verCobradas = $request->query('ver') === 'cobradas';
+        $buscar = mb_substr(trim((string) $request->query('buscar', '')), 0, 60);
+
+        $cotizaciones = Pedido::with(['cliente', 'trabajador', 'venta'])
+            ->where('tipoPedido', Pedido::COTIZACION)
+            ->where('estadoPedido', $verCobradas ? Pedido::CONVERTIDA : Pedido::PENDIENTE)
+            ->when($buscar !== '', fn ($q) => $q->where(fn ($q) => $q
+                ->where('folio', 'like', "%{$buscar}%")
+                ->orWhereHas('cliente', fn ($c) => $c->buscar($buscar))))
+            ->orderByDesc('fechaPedido')->orderByDesc('idPedido')
+            ->paginate(10)->withQueryString();
+
+        return view('administrador.ventas.cotizaciones', [
+            'cotizaciones' => $cotizaciones,
+            'verCobradas' => $verCobradas,
+            'buscar' => $buscar,
+            'totalPendientes' => Pedido::where('tipoPedido', Pedido::COTIZACION)->where('estadoPedido', Pedido::PENDIENTE)->count(),
+            'totalCobradas' => Pedido::where('tipoPedido', Pedido::COTIZACION)->where('estadoPedido', Pedido::CONVERTIDA)->count(),
+        ]);
+    }
+
     /* Ventana "Cancelar venta" (con motivo y autorización) */
     public function cancelar(Request $request, Venta $venta): RedirectResponse
     {
-        $volver = fn () => redirect()->to(url()->previous(route('administrador.ventas.consultar')));
+        $volver = fn () => redirect()->to(url()->previous(\App\Support\Ruta::a('ventas.consultar')));
 
         if ($venta->estaCancelada()) {
             return $volver()->with('alerta', ['warning', "La venta {$venta->folio} ya estaba cancelada."]);
@@ -178,9 +301,14 @@ class VentaController extends Controller
         $datos = RegistroVenta::validar($request, true);
         $venta = RegistroVenta::registrarVenta($datos, $request->user());
 
+        $mensaje = "Venta {$venta->folio} registrada por " . Producto::formatoPrecio($venta->total) . '. El inventario ya se actualizó.';
+        if ($venta->tieneSaldo()) {
+            $mensaje .= ' Pagó ' . Producto::formatoPrecio($venta->pagado()) . ' y queda debiendo ' . Producto::formatoPrecio($venta->saldo()) . '.';
+        }
+
         return redirect()
-            ->route('administrador.ventas.index')
-            ->with('alerta', ['success', "Venta {$venta->folio} registrada por " . Producto::formatoPrecio($venta->total) . '. El inventario ya se actualizó.'])
+            ->to(\App\Support\Ruta::a('ventas.index'))
+            ->with('alerta', ['success', $mensaje])
             ->with('ventaRegistrada', $venta->idVenta);
     }
 
@@ -217,7 +345,11 @@ class VentaController extends Controller
         $datos = RegistroVenta::validar($request, false);
         $cotizacion = RegistroVenta::guardarCotizacion($datos, $request->user());
 
-        return redirect()->route('administrador.ventas.cotizacion', $cotizacion);
+        // Se queda en Ventas (sin cambiar de página); desde el aviso se imprime directo
+        return redirect()->to(\App\Support\Ruta::a('ventas.index'))
+            ->with('alerta', ['success', "Cotización {$cotizacion->folio} guardada por " . Producto::formatoPrecio($cotizacion->total)
+                . '. Vale hasta el ' . $cotizacion->vigencia->format('d/m/Y') . '. La encuentras en la pestaña «Cotizaciones».'])
+            ->with('cotizacionGuardada', $cotizacion->idPedido);
     }
 
     public function cotizacion(Pedido $pedido): View
@@ -269,7 +401,7 @@ class VentaController extends Controller
             ->all();
 
         return [
-            'url' => route('administrador.ventas.editar', $venta),
+            'url' => \App\Support\Ruta::a('ventas.editar', $venta),
             'datos' => $venta->datosParaEditar(
                 $pedidos ?: null,
                 old('cliente') ? (int) old('cliente') : null,

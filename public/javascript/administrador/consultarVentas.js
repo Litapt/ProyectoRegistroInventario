@@ -41,6 +41,21 @@
         cuerpo.appendChild(tr);
       });
 
+      // Pagos (se muestran si es a crédito o si hubo más de uno)
+      const pagos = v.pagos || [];
+      $('detallePagos').classList.toggle('d-none', !(v.credito || pagos.length > 1));
+      const listaPagos = $('detallePagosLista');
+      listaPagos.replaceChildren();
+      if (pagos.length === 0) { listaPagos.appendChild(elemento('div', 'text-muted', 'Todavía no ha pagado nada.')); }
+      pagos.forEach(function (p) {
+        const fila = elemento('div', 'd-flex justify-content-between gap-3');
+        fila.appendChild(elemento('span', 'text-muted', p.fecha + ' · ' + p.metodo));
+        fila.appendChild(elemento('span', 'text-dark', p.monto));
+        listaPagos.appendChild(fila);
+      });
+      $('detalleSaldo').textContent = v.saldo ? 'Pagado ' + v.pagado + ' · Debe ' + v.saldo : 'Pagado ' + v.pagado + ' · Liquidada';
+      $('detalleSaldo').className = 'mt-2 fw-semibold ' + (v.saldo ? 'saldo-pendiente' : 'text-success');
+
       const devoluciones = v.devoluciones || [];
       $('detalleDevoluciones').classList.toggle('d-none', devoluciones.length === 0);
       const lista = $('detalleDevolucionesLista');
@@ -206,6 +221,70 @@
   if (modal.dataset.reabrir) {
     const r = JSON.parse(modal.dataset.reabrir);
     cargar(r.url, r.datos, r);
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+  }
+})();
+
+// ---------- Registrar abono (ventas a crédito) ----------
+(function () {
+  const modal = document.getElementById('modalAbono');
+  if (!modal) {
+    return;
+  }
+  const $ = function (id) { return document.getElementById(id); };
+  let saldo = 0;   // en centavos
+
+  function dinero(c) {
+    return '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function revisar() {
+    const texto = $('abonoMonto').value.trim();
+    const valor = Number(texto);
+    const centavos = Math.round(valor * 100);
+    const valido = texto !== '' && Number.isFinite(valor) && centavos >= 1 && centavos <= saldo
+      && Math.abs(valor * 100 - centavos) < 1e-6;
+    $('abonoMonto').classList.toggle('is-invalid', texto !== '' && !valido);
+    $('abonoRestante').textContent = !valido
+      ? (texto === '' ? '' : 'El abono debe ser de $0.01 a ' + dinero(saldo) + '.')
+      : (centavos === saldo ? 'Con este abono la venta queda liquidada.' : 'Después de este abono debe ' + dinero(saldo - centavos) + '.');
+    return valido;
+  }
+
+  function cargar(d, limpiar) {
+    $('formAbono').action = d.url;
+    $('abonoFolio').textContent = d.folio;
+    $('abonoDetalle').textContent = d.detalle;
+    saldo = Math.round(Number(d.saldo) * 100);
+    $('abonoSaldo').textContent = dinero(saldo);
+    if (limpiar) {
+      $('abonoMonto').value = '';
+      const errores = $('abonoErrores');
+      if (errores) { errores.remove(); }
+    }
+    $('abonoBoton').disabled = false;
+    revisar();
+  }
+
+  modal.addEventListener('show.bs.modal', function (e) {
+    if (e.relatedTarget && e.relatedTarget.dataset.saldo) { cargar(e.relatedTarget.dataset, true); }
+  });
+  modal.addEventListener('shown.bs.modal', function () { $('abonoMonto').focus(); });
+  $('abonoMonto').addEventListener('input', revisar);
+  $('abonoTodo').addEventListener('click', function () { $('abonoMonto').value = (saldo / 100).toFixed(2); revisar(); });
+
+  $('formAbono').addEventListener('submit', function (e) {
+    if (!revisar()) {
+      e.preventDefault();
+      $('abonoMonto').classList.add('is-invalid');
+      $('abonoMonto').focus();
+      return;
+    }
+    $('abonoBoton').disabled = true;
+  });
+
+  if (modal.dataset.reabrir) {
+    cargar(modal.dataset, false);
     bootstrap.Modal.getOrCreateInstance(modal).show();
   }
 })();

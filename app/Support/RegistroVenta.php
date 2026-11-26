@@ -37,6 +37,8 @@ class RegistroVenta
         'descuento' => 'descuento',
         'metodoPago' => 'método de pago',
         'totalEsperado' => 'total',
+        'condicion' => 'forma de pago',
+        'pagoInicial' => 'lo que paga ahora',
     ];
 
     /* Revisa el formulario y regresa [cliente, renglones pedidos, % descuento, datos] */
@@ -52,7 +54,13 @@ class RegistroVenta
                 ? ['required', 'integer', Rule::exists('metodosPago', 'idMetodoPago')->where('activo', true)]
                 : ['nullable'],
             'totalEsperado' => ['nullable', 'numeric'],
+            // CONTADO = paga todo; CREDITO = paga una parte (o nada) y queda a cuenta de un cliente registrado
+            'condicion' => ['nullable', Rule::in([Venta::CONTADO, Venta::CREDITO])],
+            'pagoInicial' => ['nullable', 'numeric', 'min:0', 'decimal:0,2'],
+            'cotizacion' => ['nullable', 'integer'],
         ], MensajesValidacion::MENSAJES + [
+            'pagoInicial.min' => 'Lo que paga ahora no puede ser negativo.',
+            'pagoInicial.decimal' => 'Lo que paga ahora puede tener hasta 2 decimales.',
             'productos.required' => 'Agrega al menos un producto.',
             'productos.min' => 'Agrega al menos un producto.',
             'productos.max' => 'Una venta admite como máximo ' . self::MAX_RENGLONES . ' productos distintos.',
@@ -72,6 +80,9 @@ class RegistroVenta
             'descuento' => (float) ($datos['descuento'] ?? 0),
             'metodoPago' => isset($datos['metodoPago']) ? (int) $datos['metodoPago'] : null,
             'totalEsperado' => isset($datos['totalEsperado']) ? (float) $datos['totalEsperado'] : null,
+            'condicion' => ($datos['condicion'] ?? null) === Venta::CREDITO ? Venta::CREDITO : Venta::CONTADO,
+            'pagoInicial' => isset($datos['pagoInicial']) ? round((float) $datos['pagoInicial'], 2) : 0.0,
+            'cotizacion' => isset($datos['cotizacion']) ? (int) $datos['cotizacion'] : null,
         ];
     }
 
@@ -90,12 +101,23 @@ class RegistroVenta
             $cuentas = CalculoVenta::calcular($renglones, $datos['descuento']);
             self::revisarTotal($datos, $cuentas);
 
+            // A crédito: sólo a un cliente registrado y pagando menos del total (si paga todo, es de contado)
+            $credito = ($datos['condicion'] ?? Venta::CONTADO) === Venta::CREDITO;
+            $pagoAhora = $credito ? (float) ($datos['pagoInicial'] ?? 0) : $cuentas['total'];
+            if ($credito && !$datos['cliente']) {
+                throw ValidationException::withMessages(['condicion' => 'Para dejar saldo pendiente, elige un cliente registrado.']);
+            }
+            if ($credito && $pagoAhora >= $cuentas['total']) {
+                $credito = false;
+                $pagoAhora = $cuentas['total'];
+            }
+
             $venta = Venta::create([
                 'folio' => Folios::siguiente('VENTA'),
                 'fk_idCliente' => $datos['cliente'],
                 'fk_idTrabajador' => $quien->idTrabajador,
                 'estadoVenta' => Venta::COMPLETADA,
-                'condicionPago' => Venta::CONTADO,
+                'condicionPago' => $credito ? Venta::CREDITO : Venta::CONTADO,
                 'subtotal' => $cuentas['subtotal'],
                 'descuentoTotal' => $cuentas['descuento'],
                 'impuestosTotal' => $cuentas['iva'],
@@ -135,17 +157,29 @@ class RegistroVenta
                 ]);
             }
 
-            PagoVenta::create([
-                'fk_idVenta' => $venta->idVenta,
-                'fk_idMetodoPago' => $datos['metodoPago'],
-                'monto' => $cuentas['total'],
-                'fk_idTrabajador' => $quien->idTrabajador,
-            ]);
+            if ($pagoAhora > 0) {
+                PagoVenta::create([
+                    'fk_idVenta' => $venta->idVenta,
+                    'fk_idMetodoPago' => $datos['metodoPago'],
+                    'monto' => $pagoAhora,
+                    'fk_idTrabajador' => $quien->idTrabajador,
+                    'observaciones' => $credito ? 'Pago inicial (anticipo)' : null,
+                ]);
+            }
+
+            // Si venía de una cotización, queda marcada como cobrada
+            if (!empty($datos['cotizacion'])) {
+                Pedido::where('idPedido', $datos['cotizacion'])
+                    ->where('tipoPedido', Pedido::COTIZACION)->where('estadoPedido', Pedido::PENDIENTE)
+                    ->update(['estadoPedido' => Pedido::CONVERTIDA, 'fk_idVenta' => $venta->idVenta]);
+            }
 
             Bitacora::registrar('CREAR', 'ventas', $venta->idVenta, [
                 'folio' => $venta->folio,
                 'total' => $cuentas['total'],
                 'descuentoPorcentaje' => $datos['descuento'],
+                'condicion' => $credito ? Venta::CREDITO : Venta::CONTADO,
+                'pagoAhora' => $pagoAhora,
                 'productos' => count($cuentas['renglones']),
             ]);
 
@@ -218,6 +252,39 @@ class RegistroVenta
         });
     }
 
+    /* Abono a una venta a crédito: no puede pasar de lo que debe */
+    public static function abonar(Venta $venta, float $monto, int $idMetodoPago, Trabajador $quien): PagoVenta
+    {
+        return DB::transaction(function () use ($venta, $monto, $idMetodoPago, $quien) {
+            $venta = Venta::whereKey($venta->idVenta)->lockForUpdate()->firstOrFail();
+            if ($venta->estaCancelada()) {
+                throw ValidationException::withMessages(['abono' => "La venta {$venta->folio} está cancelada."]);
+            }
+
+            $saldo = $venta->saldo();
+            if ($saldo < 0.01) {
+                throw ValidationException::withMessages(['abono' => "La venta {$venta->folio} ya está liquidada."]);
+            }
+            if ($monto < 0.01 || $monto - $saldo >= 0.005) {
+                throw ValidationException::withMessages(['abono' => 'El abono debe ser de $0.01 a ' . Producto::formatoPrecio($saldo) . ' (lo que debe).']);
+            }
+
+            $pago = PagoVenta::create([
+                'fk_idVenta' => $venta->idVenta,
+                'fk_idMetodoPago' => $idMetodoPago,
+                'monto' => round($monto, 2),
+                'fk_idTrabajador' => $quien->idTrabajador,
+                'observaciones' => 'Abono',
+            ]);
+
+            Bitacora::registrar('ABONO', 'ventas', $venta->idVenta, [
+                'folio' => $venta->folio, 'monto' => round($monto, 2), 'saldoAntes' => $saldo,
+            ]);
+
+            return $pago;
+        });
+    }
+
     /* Guarda la cotización (NO toca el inventario) */
     public static function guardarCotizacion(array $datos, Trabajador $quien): Pedido
     {
@@ -264,8 +331,10 @@ class RegistroVenta
     public static function previa(array $datos): array
     {
         $productos = Producto::whereKey(array_keys($datos['pedidos']))->get()->keyBy('idProducto');
+        $cuentas = CalculoVenta::calcular(self::renglones($datos['pedidos'], $productos, false), $datos['descuento']);
+        self::revisarTotal($datos, $cuentas);   // que no se imprima un precio distinto al de la pantalla
 
-        return CalculoVenta::calcular(self::renglones($datos['pedidos'], $productos, false), $datos['descuento']);
+        return $cuentas;
     }
 
     /* Datos para volver a armar la tabla de productos si el servidor regresa un error */

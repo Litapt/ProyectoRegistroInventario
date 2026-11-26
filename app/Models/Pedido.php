@@ -16,6 +16,7 @@ class Pedido extends Model
     public const COTIZACION = 'COTIZACION';
 
     public const PENDIENTE = 'PENDIENTE';
+    public const CONVERTIDA = 'CONVERTIDA';   // cotización que ya se cobró como venta (fk_idVenta)
 
     // Días que vale una cotización
     public const DIAS_VIGENCIA = 15;
@@ -26,7 +27,7 @@ class Pedido extends Model
 
     protected $fillable = [
         'folio', 'tipoPedido', 'fk_idCliente', 'fk_idTrabajador', 'fechaEntrega', 'vigencia',
-        'estadoPedido', 'subtotal', 'descuentoTotal', 'impuestosTotal', 'total', 'observaciones',
+        'estadoPedido', 'subtotal', 'descuentoTotal', 'impuestosTotal', 'total', 'observaciones', 'fk_idVenta',
     ];
 
     protected static function booted(): void
@@ -52,6 +53,25 @@ class Pedido extends Model
     public function detalles(): HasMany
     {
         return $this->hasMany(DetallePedido::class, 'fk_idPedido', 'idPedido')->orderBy('idDetallePedido');
+    }
+
+    public function venta(): BelongsTo
+    {
+        return $this->belongsTo(Venta::class, 'fk_idVenta', 'idVenta');
+    }
+
+    /* Cotización todavía pendiente y dentro de su vigencia */
+    public function estaVigente(): bool
+    {
+        return $this->estadoPedido === self::PENDIENTE
+            && $this->vigencia !== null
+            && $this->vigencia->copy()->endOfDay()->gte(now());
+    }
+
+    /* % de descuento que tenía (se guardó en pesos) */
+    public function porcentajeDescuento(): float
+    {
+        return (float) $this->subtotal > 0 ? round((float) $this->descuentoTotal / (float) $this->subtotal * 100, 2) : 0.0;
     }
 
     public function cliente(): BelongsTo

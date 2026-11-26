@@ -153,7 +153,7 @@ test('el ticket de una venta cancelada lo dice con su motivo', function () {
     // La lista normal sólo muestra completadas; las canceladas van en "Ver canceladas"
     $otra = venderAhora($this, [$this->filtro->idProducto => 1]);
     $this->actingAs($this->admin)->get(route('administrador.ventas.consultar'))
-        ->assertSee($otra->folio)->assertDontSee($venta->folio)->assertSee('Ver canceladas (1)');
+        ->assertSee($otra->folio)->assertDontSee($venta->folio)->assertSee('Canceladas (1)');
     $this->actingAs($this->admin)->get(route('administrador.ventas.consultar', ['ver' => 'canceladas']))
         ->assertSee($venta->folio)->assertDontSee($otra->folio)->assertSee('Cancelada')
         ->assertDontSee(route('administrador.ventas.cancelar', $venta), false);

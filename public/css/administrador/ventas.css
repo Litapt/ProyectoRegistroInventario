@@ -49,3 +49,45 @@
 }
 .cambio-mas { color: var(--c-success); font-weight: 600; }
 .cambio-menos { color: var(--c-danger); font-weight: 600; }
+
+/* "Paga todo ahora" / "Paga una parte" */
+.config-opcion {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; cursor: pointer;
+  border: 1px solid var(--c-border); border-radius: 8px; margin: 0;
+}
+.config-opcion:has(input:checked) { border-color: var(--c-primary); background: var(--c-primary-soft); }
+.config-opcion input { margin-top: 4px; accent-color: var(--c-primary); }
+.config-opcion.is-disabled { cursor: not-allowed; opacity: .6; }
+
+.saldo-pendiente { color: #C2410C; font-weight: 600; }
+
+/* ---------- Consultar: Realizadas · Con saldo · Devoluciones · Canceladas ---------- */
+.vista-ventas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--c-bg-soft);
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.vista-ventas-opcion {
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vista-ventas-opcion:hover { color: var(--c-dark); }
+
+.vista-ventas-opcion.is-active {
+  background: #FFFFFF;
+  color: var(--c-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .08);
+}
